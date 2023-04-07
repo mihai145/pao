@@ -15,18 +15,6 @@ public class StockMarketService {
         this.stockTraders = new ArrayList<>();
     }
 
-    private void clearState() {
-        this.exchanges.clear();
-        this.companies.clear();
-        this.stockTraders.clear();
-    }
-
-    private void loadSimulation(StockMarketState state) {
-        this.exchanges = state.exchanges();
-        this.companies = state.companies();
-        this.stockTraders = state.stockTraders();
-    }
-
     static StockMarketService getStockMarketService() {
         if (instance == null) instance = new StockMarketService();
         instance.clearState();
@@ -37,6 +25,18 @@ public class StockMarketService {
         if (instance == null) instance = new StockMarketService();
         instance.loadSimulation(state);
         return instance;
+    }
+
+    private void clearState() {
+        this.exchanges.clear();
+        this.companies.clear();
+        this.stockTraders.clear();
+    }
+
+    private void loadSimulation(StockMarketState state) {
+        this.exchanges = state.exchanges();
+        this.companies = state.companies();
+        this.stockTraders = state.stockTraders();
     }
 
     private ServiceCommand getCommand() {

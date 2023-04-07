@@ -1,10 +1,17 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.PriorityQueue;
 
 class OrderComparator implements java.util.Comparator<Order> {
     @Override
     public int compare(Order o1, Order o2) {
-        if (o1.getPrice() > o2.getPrice()) { return -1; }
-        if (o1.getPrice() < o2.getPrice()) { return 1; }
+        if (o1.getPrice() > o2.getPrice()) {
+            return -1;
+        }
+        if (o1.getPrice() < o2.getPrice()) {
+            return 1;
+        }
 
         return Long.compare(o1.getId(), o2.getId());
     }
@@ -12,6 +19,7 @@ class OrderComparator implements java.util.Comparator<Order> {
 
 class InverseOrderComparator implements java.util.Comparator<Order> {
     private static final OrderComparator comp = new OrderComparator();
+
     @Override
     public int compare(Order o1, Order o2) {
         return -1 * comp.compare(o1, o2);
@@ -34,7 +42,7 @@ public class Exchange {
         return name;
     }
 
-    public ArrayList<Transaction> getTransactionsFor (String ticker) {
+    public ArrayList<Transaction> getTransactionsFor(String ticker) {
         if (!transactionsFor.containsKey(ticker)) return new ArrayList<>();
         return transactionsFor.get(ticker);
     }
@@ -105,7 +113,7 @@ public class Exchange {
     }
 
     public void showTransactions(Company c) {
-        OutputSeparator.separator();
+        Utils.output_separator();
 
         if (!c.isListedOn(this)) {
             System.out.println("Company " + c.getName() + " is not listed on " + name);
@@ -124,7 +132,7 @@ public class Exchange {
     }
 
     public void showOrders(Company c) {
-        OutputSeparator.separator();
+        Utils.output_separator();
 
         if (!buyOrders.containsKey(c.getTicker()) || buyOrders.get(c.getTicker()).size() == 0) {
             System.out.println("No buy orders for " + c.getName() + " on " + name);

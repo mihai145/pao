@@ -1,5 +1,6 @@
 public class Main {
     private static final long MEGABYTE = 1024L * 1024;
+
     public static void main(String[] args) {
         StockMarketSimulator simulator = StockMarketSimulator.getInstance();
         StockMarketState state = simulator.simulate_automatic(10, 10, 3, 2, 1000, 0.2);

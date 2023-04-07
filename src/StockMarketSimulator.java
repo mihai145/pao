@@ -3,7 +3,8 @@ import java.util.ArrayList;
 public class StockMarketSimulator {
     private static StockMarketSimulator instance;
 
-    private StockMarketSimulator() {}
+    private StockMarketSimulator() {
+    }
 
     public static StockMarketSimulator getInstance() {
         if (instance == null) instance = new StockMarketSimulator();
@@ -53,19 +54,19 @@ public class StockMarketSimulator {
         // generate random companies
         ArrayList<Company> companies = new ArrayList<>();
         for (int i = 0; i < cntCompanies; i++) {
-            companies.add(new Company(RandomString.generate(10), RandomString.generate(4)));
+            companies.add(new Company(Utils.random_string(10), Utils.random_string(4)));
         }
 
         // generate random stock traders
         ArrayList<StockTrader> stockTraders = new ArrayList<>();
         for (int i = 0; i < cntStockTraders; i++) {
-            stockTraders.add(new StockTrader(RandomString.generate(10)));
+            stockTraders.add(new StockTrader(Utils.random_string(10)));
         }
 
         // generate random exchanges
         ArrayList<Exchange> exchanges = new ArrayList<>();
         for (int i = 0; i < cntExchanges; i++) {
-            exchanges.add(new Exchange(RandomString.generate(10)));
+            exchanges.add(new Exchange(Utils.random_string(10)));
         }
 
         // list companies on some exchanges

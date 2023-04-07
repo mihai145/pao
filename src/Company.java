@@ -30,7 +30,7 @@ public class Company {
     }
 
     void graphMarketPriceEvolution() {
-        OutputSeparator.separator();
+        Utils.output_separator();
 
         System.out.println("Market price evolution for " + name + " {" + ticker + "}:");
 

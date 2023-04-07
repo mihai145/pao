@@ -18,7 +18,8 @@ public class StockTrader {
     }
 
     void placeOrder(OrderType ot, OrderAction oa, Exchange e, Company c, double price, int quantity) throws CompanyNotListedOnExchangeException, InvalidOrderTypeException {
-        if (!c.isListedOn(e)) throw new CompanyNotListedOnExchangeException(c.getName() + " is not listed on " + e.getName());
+        if (!c.isListedOn(e))
+            throw new CompanyNotListedOnExchangeException(c.getName() + " is not listed on " + e.getName());
 
         Order order;
         if (ot == OrderType.LIMIT) {
@@ -34,7 +35,7 @@ public class StockTrader {
     }
 
     void showActiveOrders() {
-        OutputSeparator.separator();
+        Utils.output_separator();
 
         if (activeOrders.size() == 0) {
             System.out.println(name + " has no active orders");

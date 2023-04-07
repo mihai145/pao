@@ -11,15 +11,16 @@ public enum ServiceCommand {
     SHOW_MARKET_PRICE_EVOLUTION_FOR_COMPANY(10),
     QUIT(11);
     private final int idx;
+
     ServiceCommand(int idx) {
         this.idx = idx;
     }
 
-    public int getIdx() {
-        return this.idx;
-    }
-
     public static int count() {
         return QUIT.getIdx();
+    }
+
+    public int getIdx() {
+        return this.idx;
     }
 }

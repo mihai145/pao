@@ -5,11 +5,11 @@ public abstract class Order {
     private final OrderAction orderAction;
     private final StockTrader stockTrader;
     private final String ticker;
-    private int quantity; // may be modified by splitting the order
     private final double price;
     private final Exchange exchange;
     private final Date date;
     private final long id;
+    private int quantity; // may be modified by splitting the order
 
     Order(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange) {
         this.orderAction = orderAction;
@@ -26,7 +26,9 @@ public abstract class Order {
         return orderAction;
     }
 
-    public StockTrader getStockTrader() { return stockTrader; }
+    public StockTrader getStockTrader() {
+        return stockTrader;
+    }
 
     public String getTicker() {
         return ticker;
@@ -40,9 +42,13 @@ public abstract class Order {
         return price;
     }
 
-    public long getId() { return id; }
+    public long getId() {
+        return id;
+    }
 
-    public void deductQuantity(int q) { this.quantity -= q; }
+    public void deductQuantity(int q) {
+        this.quantity -= q;
+    }
 
     public void cancel() {
         exchange.cancel(this);
