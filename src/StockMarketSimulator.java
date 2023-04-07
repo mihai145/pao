@@ -79,7 +79,7 @@ public class StockMarketSimulator {
 
         for (int i = 0; i < cntOrders; i++) {
             // generate a random order
-            OrderType ot = Math.random() < 0.5 ? OrderType.LIMIT : OrderType.ICEBERG;
+            OrderType ot = Math.random() < 0.33 ? OrderType.LIMIT : (Math.random() < 0.33 ? OrderType.ICEBERG : OrderType.MARKET);
             OrderAction oa = Math.random() < 0.5 ? OrderAction.BUY : OrderAction.SELL;
 
             int stockTraderIdx = (int) Math.floor(Math.random() * cntStockTraders);

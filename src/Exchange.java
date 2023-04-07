@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.*;
 
 class OrderComparator implements java.util.Comparator<Order> {
     @Override
@@ -155,5 +152,19 @@ public class Exchange {
                 System.out.println((idx + 1) + ". " + o.displayOnExchange());
             }
         }
+    }
+
+    public double getMarketPrice(OrderAction oa, String ticker) throws NoDataFoundForCompanyException {
+        if (oa == OrderAction.BUY) {
+            if (!buyOrders.containsKey(ticker) || buyOrders.get(ticker).size() == 0) {
+                throw new NoDataFoundForCompanyException("No data found for " + ticker);
+            }
+            return Objects.requireNonNull(buyOrders.get(ticker).peek()).getPrice();
+        }
+
+        if (!sellOrders.containsKey(ticker) || sellOrders.get(ticker).size() == 0) {
+            throw new NoDataFoundForCompanyException("No data found for " + ticker);
+        }
+        return Objects.requireNonNull(sellOrders.get(ticker).peek()).getPrice();
     }
 }

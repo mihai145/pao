@@ -143,7 +143,11 @@ public class StockMarketService {
         OrderAction oa = chooseOrderAction();
         Company c = chooseCompany();
         Exchange e = chooseExchange();
-        double price = choosePrice();
+
+        double price = 0.;
+        if (ot != OrderType.MARKET) {
+            price = choosePrice();
+        }
         int quantity = chooseQuantity();
 
         try {

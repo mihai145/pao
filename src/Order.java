@@ -1,15 +1,15 @@
 import java.util.Date;
 
 public abstract class Order {
-    private static long stamp; // unique auto-incrementing id assigned to all orders
-    private final OrderAction orderAction;
-    private final StockTrader stockTrader;
-    private final String ticker;
-    private final double price;
-    private final Exchange exchange;
-    private final Date date;
-    private final long id;
-    private int quantity; // may be modified by splitting the order
+    protected static long stamp; // unique auto-incrementing id assigned to all orders
+    protected final OrderAction orderAction;
+    protected final StockTrader stockTrader;
+    protected final String ticker;
+    protected double price;
+    protected final Exchange exchange;
+    protected final Date date;
+    protected final long id;
+    protected int quantity; // may be modified by splitting the order
 
     Order(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange) {
         this.orderAction = orderAction;
@@ -61,9 +61,17 @@ public abstract class Order {
     @Override
     public String toString() {
         return "[date=" + date + ", trader=" + stockTrader.getName() + ", ticker=" + ticker
-                + ", price=" + price + ", quantity" + quantity
+                + ", price=" + price + ", quantity=" + quantity
                 + ", listed on=" + exchange.getName() + "]";
     }
 
     public abstract String displayOnExchange();
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Order) {
+            return id == ((Order) obj).getId();
+        }
+        return false;
+    }
 }

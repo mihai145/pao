@@ -10,6 +10,6 @@ public class IcebergOrder extends Order {
 
     @Override
     public String displayOnExchange() {
-        return getOrderAction().name();
+        return getOrderAction().name() + " price: " + getPrice() + " quantity: " + getQuantity();
     }
 }

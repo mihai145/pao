@@ -3,7 +3,7 @@ public class Main {
 
     public static void main(String[] args) {
         StockMarketSimulator simulator = StockMarketSimulator.getInstance();
-        StockMarketState state = simulator.simulate_automatic(10, 10, 3, 2, 1000, 0.2);
+        StockMarketState state = simulator.simulate_automatic(10, 10, 3, 3, 5000, 0.2);
         StockMarketService service = StockMarketService.getStockMarketService(state);
         service.runService();
 

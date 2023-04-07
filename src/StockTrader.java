@@ -17,7 +17,7 @@ public class StockTrader {
         return activeOrders;
     }
 
-    void placeOrder(OrderType ot, OrderAction oa, Exchange e, Company c, double price, int quantity) throws CompanyNotListedOnExchangeException, InvalidOrderTypeException {
+    void placeOrder(OrderType ot, OrderAction oa, Exchange e, Company c, double price, int quantity) throws CompanyNotListedOnExchangeException, InvalidOrderTypeException, NoDataFoundForCompanyException {
         if (!c.isListedOn(e))
             throw new CompanyNotListedOnExchangeException(c.getName() + " is not listed on " + e.getName());
 
@@ -26,12 +26,14 @@ public class StockTrader {
             order = new LimitOrder(oa, this, c.getTicker(), quantity, price, e);
         } else if (ot == OrderType.ICEBERG) {
             order = new IcebergOrder(oa, this, c.getTicker(), quantity, price, e);
+        } else if (ot == OrderType.MARKET) {
+            order = new MarketOrder(oa, this, c.getTicker(), quantity, e);
         } else {
             throw new InvalidOrderTypeException("Order type " + ot.toString() + " does not exist");
         }
 
-        e.addOrder(order);
         activeOrders.add(order);
+        e.addOrder(order);
     }
 
     void showActiveOrders() {
@@ -59,6 +61,7 @@ public class StockTrader {
     }
 
     void completeOrder(Order order) {
-        activeOrders.remove(order);
+        boolean res = activeOrders.remove(order);
+        if (!res) throw new AssertionError();
     }
 }

@@ -1,3 +1,3 @@
 public enum OrderType {
-    LIMIT, ICEBERG
+    LIMIT, ICEBERG, MARKET
 }
