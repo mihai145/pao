@@ -10,7 +10,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 
 public class Company {
-    private final String name, ticker;
+    private final String name;
+    private final String ticker;
     private final HashSet<Exchange> exchanges;
 
     public Company(String name, String ticker) {

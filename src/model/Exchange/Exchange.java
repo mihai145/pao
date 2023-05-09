@@ -2,38 +2,18 @@ package model.Exchange;
 
 import exceptions.NoDataFoundForCompanyException;
 import model.Company.Company;
+import model.Exchange.OrderComparators.InverseOrderComparator;
+import model.Exchange.OrderComparators.OrderComparator;
 import model.Order.Order;
 import model.Order.OrderAction;
 import utils.Utils;
 
 import java.util.*;
 
-class OrderComparator implements java.util.Comparator<Order> {
-    @Override
-    public int compare(Order o1, Order o2) {
-        if (o1.getPrice() > o2.getPrice()) {
-            return -1;
-        }
-        if (o1.getPrice() < o2.getPrice()) {
-            return 1;
-        }
-
-        return Long.compare(o1.getId(), o2.getId());
-    }
-}
-
-class InverseOrderComparator implements java.util.Comparator<Order> {
-    private static final OrderComparator comp = new OrderComparator();
-
-    @Override
-    public int compare(Order o1, Order o2) {
-        return -1 * comp.compare(o1, o2);
-    }
-}
-
 public class Exchange {
     public String name;
-    HashMap<String, PriorityQueue<Order>> buyOrders, sellOrders;
+    HashMap<String, PriorityQueue<Order>> buyOrders;
+    HashMap<String, PriorityQueue<Order>> sellOrders;
     HashMap<String, ArrayList<Transaction>> transactionsFor;
 
     public Exchange(String name) {
