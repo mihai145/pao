@@ -53,7 +53,7 @@ public class Exchange {
 
         while (buyOrders.get(ticker).size() > 0 && sellOrders.get(ticker).size() > 0) {
             Order buyOrder = buyOrders.get(ticker).peek(), sellOrder = sellOrders.get(ticker).peek();
-            if (buyOrder.getPrice() >= sellOrder.getPrice()) {
+            if (buyOrder != null && sellOrder != null && buyOrder.getPrice() >= sellOrder.getPrice()) {
                 // remove orders from the order book
                 buyOrders.get(ticker).poll();
                 sellOrders.get(ticker).poll();

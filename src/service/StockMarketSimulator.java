@@ -12,8 +12,14 @@ import java.util.ArrayList;
 
 public class StockMarketSimulator {
     private static StockMarketSimulator instance;
+    private final ArrayList<Company> companies;
+    private final ArrayList<Exchange> exchanges;
+    private final ArrayList<StockTrader> stockTraders;
 
     private StockMarketSimulator() {
+        companies = new ArrayList<>();
+        exchanges = new ArrayList<>();
+        stockTraders = new ArrayList<>();
     }
 
     public static StockMarketSimulator getInstance() {
@@ -56,25 +62,22 @@ public class StockMarketSimulator {
             johnPaulson.cancelOrder(johnPaulson.getActiveOrders().get(0));
             johnPaulson.showActiveOrders();
         } catch (Exception ignored) {
-
+            System.out.println("Error occured");
         }
     }
 
     public StockMarketState simulate_automatic(int cntCompanies, int cntStockTraders, int cntExchanges, int cntListings, int cntOrders, double cancellationProb) {
         // generate random companies
-        ArrayList<Company> companies = new ArrayList<>();
         for (int i = 0; i < cntCompanies; i++) {
             companies.add(new Company(Utils.random_string(10), Utils.random_string(4)));
         }
 
         // generate random stock traders
-        ArrayList<StockTrader> stockTraders = new ArrayList<>();
         for (int i = 0; i < cntStockTraders; i++) {
             stockTraders.add(new StockTrader(Utils.random_string(10)));
         }
 
         // generate random exchanges
-        ArrayList<Exchange> exchanges = new ArrayList<>();
         for (int i = 0; i < cntExchanges; i++) {
             exchanges.add(new Exchange(Utils.random_string(10)));
         }
@@ -89,38 +92,11 @@ public class StockMarketSimulator {
 
         for (int i = 0; i < cntOrders; i++) {
             // generate a random order
-            OrderType ot = Math.random() < 0.33 ? OrderType.LIMIT : (Math.random() < 0.33 ? OrderType.ICEBERG : OrderType.MARKET);
-            OrderAction oa = Math.random() < 0.5 ? OrderAction.BUY : OrderAction.SELL;
-
-            int stockTraderIdx = (int) Math.floor(Math.random() * cntStockTraders);
-            int companyIdx = (int) Math.floor(Math.random() * cntCompanies);
-            int exchangeIdx = (int) Math.floor(Math.random() * cntExchanges);
-
-            double price = Math.random() * 100;
-            int quantity = 1 + (int) Math.floor(Math.random() * 100);
-
-            try {
-                stockTraders
-                        .get(stockTraderIdx)
-                        .placeOrder(ot, oa,
-                                exchanges.get(exchangeIdx),
-                                companies.get(companyIdx),
-                                price,
-                                quantity);
-            } catch (Exception ignored) {
-
-            }
+            generateRandomOrder(cntStockTraders, cntCompanies, cntExchanges);
 
             // cancel a random order with probability cancellationProb
             if (Math.random() <= cancellationProb) {
-                stockTraderIdx = (int) Math.floor(Math.random() * cntStockTraders);
-
-                ArrayList<Order> activeOrders = stockTraders.get(stockTraderIdx).getActiveOrders();
-                if (activeOrders.size() == 0) continue;
-                int orderIdx = (int) Math.floor(Math.random() * activeOrders.size());
-                stockTraders
-                        .get(stockTraderIdx)
-                        .cancelOrder(activeOrders.get(orderIdx));
+                cancelRandomOrder(cntStockTraders);
             }
         }
 
@@ -153,5 +129,41 @@ public class StockMarketSimulator {
         }
 
         return new StockMarketState(exchanges, companies, stockTraders);
+    }
+
+    private void generateRandomOrder(int cntStockTraders, int cntCompanies, int cntExchanges) {
+        OrderType ot = Math.random() < 0.33 ? OrderType.LIMIT : (Math.random() < 0.33 ? OrderType.ICEBERG : OrderType.MARKET);
+        OrderAction oa = Math.random() < 0.5 ? OrderAction.BUY : OrderAction.SELL;
+
+        int stockTraderIdx = (int) Math.floor(Math.random() * cntStockTraders);
+        int companyIdx = (int) Math.floor(Math.random() * cntCompanies);
+        int exchangeIdx = (int) Math.floor(Math.random() * cntExchanges);
+
+        double price = Math.random() * 100;
+        int quantity = 1 + (int) Math.floor(Math.random() * 100);
+
+        try {
+            stockTraders
+                    .get(stockTraderIdx)
+                    .placeOrder(ot, oa,
+                            exchanges.get(exchangeIdx),
+                            companies.get(companyIdx),
+                            price,
+                            quantity);
+        } catch (Exception ignored) {
+            System.out.println("Error occured");
+        }
+    }
+
+    private void cancelRandomOrder(int cntStockTraders) {
+        int stockTraderIdx = (int) Math.floor(Math.random() * cntStockTraders);
+
+        ArrayList<Order> activeOrders = stockTraders.get(stockTraderIdx).getActiveOrders();
+        if (activeOrders.size() == 0) return;
+
+        int orderIdx = (int) Math.floor(Math.random() * activeOrders.size());
+        stockTraders
+                .get(stockTraderIdx)
+                .cancelOrder(activeOrders.get(orderIdx));
     }
 }
