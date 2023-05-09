@@ -1,3 +1,12 @@
+package service;
+
+import model.Company.Company;
+import model.Exchange.Exchange;
+import model.Order.Order;
+import model.Order.OrderAction;
+import model.Order.OrderType;
+import model.StockTrader.StockTrader;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -21,7 +30,7 @@ public class StockMarketService {
         return instance;
     }
 
-    static StockMarketService getStockMarketService(StockMarketState state) {
+    public static StockMarketService getStockMarketService(StockMarketState state) {
         if (instance == null) instance = new StockMarketService();
         instance.loadSimulation(state);
         return instance;
@@ -85,19 +94,19 @@ public class StockMarketService {
     }
 
     private void handleAddExchange() {
-        System.out.println("Exchange name:");
+        System.out.println("model.Exchange.Exchange name:");
         String name = scanner.next();
         exchanges.add(new Exchange(name));
-        System.out.println("Exchange added");
+        System.out.println("model.Exchange.Exchange added");
     }
 
     private void handleAddCompany() {
-        System.out.println("Company name:");
+        System.out.println("model.Company.Company name:");
         String name = scanner.next();
-        System.out.println("Company ticker");
+        System.out.println("model.Company.Company ticker");
         String ticker = scanner.next();
         companies.add(new Company(name, ticker));
-        System.out.println("Company added");
+        System.out.println("model.Company.Company added");
     }
 
     private void handleAddStockTrader() {
@@ -152,7 +161,7 @@ public class StockMarketService {
 
         try {
             t.placeOrder(ot, oa, e, c, price, quantity);
-            System.out.println("Order placed");
+            System.out.println("model.Order.Order placed");
         } catch (Exception err) {
             System.out.println("Error: " + err);
         }
@@ -172,7 +181,7 @@ public class StockMarketService {
 
         Order o = chooseOrder(t);
         t.cancelOrder(o);
-        System.out.println("Order cancelled");
+        System.out.println("model.Order.Order cancelled");
     }
 
     private void handleShowTransactions() {

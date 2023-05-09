@@ -1,3 +1,9 @@
+package model.Company;
+
+import model.Exchange.Exchange;
+import model.Exchange.Transaction;
+import utils.Utils;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -7,7 +13,7 @@ public class Company {
     private final String name, ticker;
     private final HashSet<Exchange> exchanges;
 
-    Company(String name, String ticker) {
+    public Company(String name, String ticker) {
         this.name = name;
         this.ticker = ticker;
         exchanges = new HashSet<>();
@@ -21,7 +27,7 @@ public class Company {
         return ticker;
     }
 
-    boolean isListedOn(Exchange e) {
+    public boolean isListedOn(Exchange e) {
         return exchanges.contains(e);
     }
 
@@ -29,7 +35,7 @@ public class Company {
         exchanges.add(e);
     }
 
-    void graphMarketPriceEvolution() {
+    public void graphMarketPriceEvolution() {
         Utils.output_separator();
 
         System.out.println("Market price evolution for " + name + " {" + ticker + "}:");

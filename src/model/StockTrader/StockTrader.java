@@ -1,10 +1,20 @@
+package model.StockTrader;
+
+import exceptions.CompanyNotListedOnExchangeException;
+import exceptions.InvalidOrderTypeException;
+import exceptions.NoDataFoundForCompanyException;
+import model.Company.Company;
+import model.Exchange.Exchange;
+import model.Order.*;
+import utils.Utils;
+
 import java.util.ArrayList;
 
 public class StockTrader {
     private final String name;
     private final ArrayList<Order> activeOrders;
 
-    StockTrader(String name) {
+    public StockTrader(String name) {
         this.name = name;
         activeOrders = new ArrayList<>();
     }
@@ -17,7 +27,7 @@ public class StockTrader {
         return activeOrders;
     }
 
-    void placeOrder(OrderType ot, OrderAction oa, Exchange e, Company c, double price, int quantity) throws CompanyNotListedOnExchangeException, InvalidOrderTypeException, NoDataFoundForCompanyException {
+    public void placeOrder(OrderType ot, OrderAction oa, Exchange e, Company c, double price, int quantity) throws CompanyNotListedOnExchangeException, InvalidOrderTypeException, NoDataFoundForCompanyException {
         if (!c.isListedOn(e))
             throw new CompanyNotListedOnExchangeException(c.getName() + " is not listed on " + e.getName());
 
@@ -29,14 +39,14 @@ public class StockTrader {
         } else if (ot == OrderType.MARKET) {
             order = new MarketOrder(oa, this, c.getTicker(), quantity, e);
         } else {
-            throw new InvalidOrderTypeException("Order type " + ot.toString() + " does not exist");
+            throw new InvalidOrderTypeException("model.Order.Order type " + ot.toString() + " does not exist");
         }
 
         activeOrders.add(order);
         e.addOrder(order);
     }
 
-    void showActiveOrders() {
+    public void showActiveOrders() {
         Utils.output_separator();
 
         if (activeOrders.size() == 0) {
@@ -50,7 +60,7 @@ public class StockTrader {
         }
     }
 
-    void cancelOrder(Order order) {
+    public void cancelOrder(Order order) {
         if (!activeOrders.contains(order)) {
             System.out.println("Invalid order");
             return;
@@ -60,7 +70,7 @@ public class StockTrader {
         activeOrders.remove(order);
     }
 
-    void completeOrder(Order order) {
+    public void completeOrder(Order order) {
         boolean res = activeOrders.remove(order);
         if (!res) throw new AssertionError();
     }

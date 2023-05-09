@@ -1,3 +1,7 @@
+import service.StockMarketService;
+import service.StockMarketSimulator;
+import service.StockMarketState;
+
 public class Main {
     private static final long MEGABYTE = 1024L * 1024;
 

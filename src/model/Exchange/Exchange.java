@@ -1,3 +1,11 @@
+package model.Exchange;
+
+import exceptions.NoDataFoundForCompanyException;
+import model.Company.Company;
+import model.Order.Order;
+import model.Order.OrderAction;
+import utils.Utils;
+
 import java.util.*;
 
 class OrderComparator implements java.util.Comparator<Order> {
@@ -28,7 +36,7 @@ public class Exchange {
     HashMap<String, PriorityQueue<Order>> buyOrders, sellOrders;
     HashMap<String, ArrayList<Transaction>> transactionsFor;
 
-    Exchange(String name) {
+    public Exchange(String name) {
         this.name = name;
         buyOrders = new HashMap<>();
         sellOrders = new HashMap<>();
@@ -113,7 +121,7 @@ public class Exchange {
         Utils.output_separator();
 
         if (!c.isListedOn(this)) {
-            System.out.println("Company " + c.getName() + " is not listed on " + name);
+            System.out.println("model.Company.Company " + c.getName() + " is not listed on " + name);
             return;
         }
 

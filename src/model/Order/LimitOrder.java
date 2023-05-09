@@ -1,11 +1,16 @@
+package model.Order;
+
+import model.Exchange.Exchange;
+import model.StockTrader.StockTrader;
+
 public class LimitOrder extends Order {
-    LimitOrder(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange) {
+    public LimitOrder(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange) {
         super(orderAction, stockTrader, ticker, quantity, price, exchange);
     }
 
     @Override
     public String toString() {
-        return "LimitOrder" + super.toString();
+        return "model.Order.LimitOrder" + super.toString();
     }
 
     @Override

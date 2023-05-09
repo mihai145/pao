@@ -1,3 +1,8 @@
+package model.Order;
+
+import model.Exchange.Exchange;
+import model.StockTrader.StockTrader;
+
 import java.util.Date;
 
 public abstract class Order {
@@ -5,10 +10,10 @@ public abstract class Order {
     protected final OrderAction orderAction;
     protected final StockTrader stockTrader;
     protected final String ticker;
-    protected double price;
     protected final Exchange exchange;
     protected final Date date;
     protected final long id;
+    protected double price;
     protected int quantity; // may be modified by splitting the order
 
     Order(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange) {

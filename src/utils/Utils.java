@@ -1,3 +1,5 @@
+package utils;
+
 public final class Utils {
     private static final int CHARS_LENGTH;
     private static final char[] CHARS;
@@ -16,7 +18,7 @@ public final class Utils {
     private Utils() {
     }
 
-    static String random_string(int length) {
+    public static String random_string(int length) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < length; i++) {
             int rnd = (int) Math.floor(Math.random() * CHARS_LENGTH);

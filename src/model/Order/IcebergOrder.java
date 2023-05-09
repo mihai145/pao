@@ -1,11 +1,16 @@
+package model.Order;
+
+import model.Exchange.Exchange;
+import model.StockTrader.StockTrader;
+
 public class IcebergOrder extends Order {
-    IcebergOrder(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange) {
+    public IcebergOrder(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange) {
         super(orderAction, stockTrader, ticker, quantity, price, exchange);
     }
 
     @Override
     public String toString() {
-        return "IcebergOrder" + super.toString();
+        return "model.Order.Order.IcebergOrder" + super.toString();
     }
 
     @Override

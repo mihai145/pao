@@ -1,5 +1,11 @@
+package model.Order;
+
+import exceptions.NoDataFoundForCompanyException;
+import model.Exchange.Exchange;
+import model.StockTrader.StockTrader;
+
 public class MarketOrder extends Order {
-    MarketOrder(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, Exchange exchange) throws NoDataFoundForCompanyException {
+    public MarketOrder(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, Exchange exchange) throws NoDataFoundForCompanyException {
         super(orderAction, stockTrader, ticker, quantity, getMarketPrice(orderAction, ticker, exchange), exchange);
     }
 
@@ -21,7 +27,7 @@ public class MarketOrder extends Order {
 
     @Override
     public String toString() {
-        return "MarketOrder" + super.toString();
+        return "model.Order.MarketOrder" + super.toString();
     }
 
     @Override

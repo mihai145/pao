@@ -1,3 +1,5 @@
+package service;
+
 public enum ServiceCommand {
     ADD_EXCHANGE(1),
     ADD_COMPANY(2),

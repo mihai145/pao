@@ -1,3 +1,13 @@
+package service;
+
+import model.Company.Company;
+import model.Exchange.Exchange;
+import model.Order.Order;
+import model.Order.OrderAction;
+import model.Order.OrderType;
+import model.StockTrader.StockTrader;
+import utils.Utils;
+
 import java.util.ArrayList;
 
 public class StockMarketSimulator {
