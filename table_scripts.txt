@@ -1,0 +1,39 @@
+CREATE TABLE EXCHANGES (
+	exchange_name VARCHAR(50) UNIQUE
+);
+
+CREATE TABLE COMPANIES (
+	company_name VARCHAR(50) UNIQUE,
+	company_ticker VARCHAR(5) UNIQUE
+);
+
+CREATE TABLE STOCKTRADERS (
+	stocktrader_name VARCHAR(50) UNIQUE
+);
+
+CREATE TABLE ORDERS (
+	id INTEGER UNIQUE,
+	order_action VARCHAR(4),
+	order_type VARCHAR(20),
+	stocktrader_name VARCHAR(50),
+	company_ticker VARCHAR(50),
+	exchange_name VARCHAR(50),
+	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	price FLOAT,
+	quantity INTEGER
+);
+
+CREATE TABLE LISTED_ON (
+	exchange_name VARCHAR(50),
+	company_ticker VARCHAR(50)
+);
+
+CREATE TABLE TRANSACTIONS (
+	exchange_name VARCHAR(50),
+	company_ticker VARCHAR(50),
+	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	stocktrader_name_from VARCHAR(50),
+	stocktrader_name_to VARCHAR(50),
+	price FLOAT,
+	quantity INTEGER
+);
