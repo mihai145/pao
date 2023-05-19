@@ -1,5 +1,6 @@
 package service;
 
+import database.DatabaseConnection;
 import model.company.Company;
 import model.exchange.Exchange;
 import model.order.Order;
@@ -7,42 +8,39 @@ import model.order.OrderAction;
 import model.order.OrderType;
 import model.stocktrader.StockTrader;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class StockMarketService {
     static private StockMarketService instance = null;
     private final Scanner scanner;
+    private final DatabaseConnection connection;
     private ArrayList<Exchange> exchanges;
     private ArrayList<Company> companies;
     private ArrayList<StockTrader> stockTraders;
 
-    private StockMarketService() {
+    private StockMarketService() throws SQLException {
         this.scanner = new Scanner(System.in);
+        this.connection = DatabaseConnection.getInstance();
         this.exchanges = new ArrayList<>();
         this.companies = new ArrayList<>();
         this.stockTraders = new ArrayList<>();
     }
 
-    static StockMarketService getStockMarketService() {
+    public static StockMarketService getStockMarketService() throws SQLException {
         if (instance == null) instance = new StockMarketService();
-        instance.clearState();
+        instance.loadState(instance.connection.getState());
         return instance;
     }
 
-    public static StockMarketService getStockMarketService(StockMarketState state) {
+    public static StockMarketService getStockMarketService(StockMarketState state) throws SQLException {
         if (instance == null) instance = new StockMarketService();
-        instance.loadSimulation(state);
+        instance.loadState(state);
         return instance;
     }
 
-    private void clearState() {
-        this.exchanges.clear();
-        this.companies.clear();
-        this.stockTraders.clear();
-    }
-
-    private void loadSimulation(StockMarketState state) {
+    private void loadState(StockMarketState state) {
         this.exchanges = state.exchanges();
         this.companies = state.companies();
         this.stockTraders = state.stockTraders();
@@ -94,26 +92,44 @@ public class StockMarketService {
     }
 
     private void handleAddExchange() {
-        System.out.println("model.Exchange.Exchange name:");
+        System.out.println("Exchange name:");
         String name = scanner.next();
-        exchanges.add(new Exchange(name));
-        System.out.println("model.Exchange.Exchange added");
+
+        try {
+            connection.addExchange(name);
+            exchanges.add(new Exchange(name));
+            System.out.println("Exchange added");
+        } catch (SQLException exception) {
+            System.out.println("Error adding the exchange: " + exception.getMessage());
+        }
     }
 
     private void handleAddCompany() {
-        System.out.println("model.Company.Company name:");
+        System.out.println("Company name:");
         String name = scanner.next();
-        System.out.println("model.Company.Company ticker");
+        System.out.println("Company ticker");
         String ticker = scanner.next();
-        companies.add(new Company(name, ticker));
-        System.out.println("model.Company.Company added");
+
+        try {
+            connection.addCompany(name, ticker);
+            companies.add(new Company(name, ticker));
+            System.out.println("Company added");
+        } catch (SQLException exception) {
+            System.out.println("Error adding the company: " + exception.getMessage());
+        }
     }
 
     private void handleAddStockTrader() {
         System.out.println("Stock trader name:");
         String name = scanner.next();
-        stockTraders.add(new StockTrader(name));
-        System.out.println("Stock trader added");
+
+        try {
+            connection.addStockTrader(name);
+            stockTraders.add(new StockTrader(name));
+            System.out.println("Stock trader added");
+        } catch (SQLException exception) {
+            System.out.println("Error adding the stock trader: " + exception.getMessage());
+        }
     }
 
     private void handleListCompanyOnExchange() {
@@ -128,8 +144,13 @@ public class StockMarketService {
 
         Company c = chooseCompany();
         Exchange e = chooseExchange();
-        c.listOn(e);
-        System.out.println(c.getName() + " listed on " + e.getName());
+
+        try {
+            c.listOn(e);
+            System.out.println(c.getName() + " listed on " + e.getName());
+        } catch (SQLException exception) {
+            System.out.println("Error while listing on exchange: " + exception.getMessage());
+        }
     }
 
     private void handlePlaceOrder() {
@@ -161,9 +182,9 @@ public class StockMarketService {
 
         try {
             t.placeOrder(ot, oa, e, c, price, quantity);
-            System.out.println("model.Order.Order placed");
-        } catch (Exception err) {
-            System.out.println("Error: " + err);
+            System.out.println("Order placed");
+        } catch (Exception exception) {
+            System.out.println("Error while adding order: " + exception.getMessage());
         }
     }
 
@@ -180,8 +201,13 @@ public class StockMarketService {
         }
 
         Order o = chooseOrder(t);
-        t.cancelOrder(o);
-        System.out.println("model.Order.Order cancelled");
+
+        try {
+            t.cancelOrder(o);
+            System.out.println("model.Order.Order cancelled");
+        } catch (SQLException exception) {
+            System.out.println("Error while cancelling order: " + exception.getMessage());
+        }
     }
 
     private void handleShowTransactions() {

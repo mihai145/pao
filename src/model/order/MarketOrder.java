@@ -4,9 +4,15 @@ import exceptions.NoDataFoundForCompanyException;
 import model.exchange.Exchange;
 import model.stocktrader.StockTrader;
 
+import java.util.Date;
+
 public class MarketOrder extends Order {
     public MarketOrder(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, Exchange exchange) throws NoDataFoundForCompanyException {
         super(orderAction, stockTrader, ticker, quantity, getMarketPrice(orderAction, ticker, exchange), exchange);
+    }
+
+    public MarketOrder(long id, OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, Exchange exchange, Date date) throws NoDataFoundForCompanyException {
+        super(id, orderAction, stockTrader, ticker, quantity, getMarketPrice(orderAction, ticker, exchange), exchange, date);
     }
 
     static double getMarketPrice(OrderAction orderAction, String ticker, Exchange exchange) throws NoDataFoundForCompanyException {
@@ -27,7 +33,7 @@ public class MarketOrder extends Order {
 
     @Override
     public String toString() {
-        return "model.Order.MarketOrder" + super.toString();
+        return "MarketOrder" + super.toString();
     }
 
     @Override

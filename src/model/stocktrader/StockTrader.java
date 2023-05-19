@@ -1,5 +1,6 @@
 package model.stocktrader;
 
+import database.DatabaseConnection;
 import exceptions.CompanyNotListedOnExchangeException;
 import exceptions.InvalidOrderTypeException;
 import exceptions.NoDataFoundForCompanyException;
@@ -8,6 +9,7 @@ import model.exchange.Exchange;
 import model.order.*;
 import utils.Utils;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class StockTrader {
@@ -27,7 +29,11 @@ public class StockTrader {
         return activeOrders;
     }
 
-    public void placeOrder(OrderType ot, OrderAction oa, Exchange e, Company c, double price, int quantity) throws CompanyNotListedOnExchangeException, InvalidOrderTypeException, NoDataFoundForCompanyException {
+    public void appendActiveOrder(Order order) {
+        activeOrders.add(order);
+    }
+
+    public void placeOrder(OrderType ot, OrderAction oa, Exchange e, Company c, double price, int quantity) throws CompanyNotListedOnExchangeException, InvalidOrderTypeException, NoDataFoundForCompanyException, SQLException {
         if (!c.isListedOn(e))
             throw new CompanyNotListedOnExchangeException(c.getName() + " is not listed on " + e.getName());
 
@@ -42,6 +48,7 @@ public class StockTrader {
             throw new InvalidOrderTypeException("model.Order.Order type " + ot.toString() + " does not exist");
         }
 
+        DatabaseConnection.getInstance().addOrder(order);
         activeOrders.add(order);
         e.addOrder(order);
     }
@@ -60,18 +67,19 @@ public class StockTrader {
         }
     }
 
-    public void cancelOrder(Order order) {
+    public void cancelOrder(Order order) throws SQLException {
         if (!activeOrders.contains(order)) {
             System.out.println("Invalid order");
             return;
         }
 
+        DatabaseConnection.getInstance().removeOrder(order);
         order.cancel();
         activeOrders.remove(order);
     }
 
-    public void completeOrder(Order order) {
-        boolean res = activeOrders.remove(order);
-        if (!res) throw new AssertionError();
+    public void completeOrder(Order order) throws SQLException {
+        DatabaseConnection.getInstance().removeOrder(order);
+        activeOrders.remove(order);
     }
 }

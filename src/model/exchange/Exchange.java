@@ -8,6 +8,7 @@ import model.order.Order;
 import model.order.OrderAction;
 import utils.Utils;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class Exchange {
@@ -32,7 +33,7 @@ public class Exchange {
         return transactionsFor.get(ticker);
     }
 
-    public void addOrder(Order order) {
+    public void addOrder(Order order) throws SQLException {
         if (order.getOrderAction() == OrderAction.BUY) {
             if (!buyOrders.containsKey(order.getTicker())) {
                 buyOrders.put(order.getTicker(), new PriorityQueue<>(new OrderComparator()));
@@ -48,7 +49,7 @@ public class Exchange {
         match(order.getTicker(), order.getOrderAction());
     }
 
-    private void match(String ticker, OrderAction oa) {
+    private void match(String ticker, OrderAction oa) throws SQLException {
         if (!buyOrders.containsKey(ticker) || !sellOrders.containsKey(ticker)) return;
 
         while (buyOrders.get(ticker).size() > 0 && sellOrders.get(ticker).size() > 0) {
@@ -87,6 +88,13 @@ public class Exchange {
             transactionsFor.put(ticker, new ArrayList<>());
         }
         transactionsFor.get(ticker).add(new Transaction(new Date(), from, to, price, quantity));
+    }
+
+    public void addTransaction(String ticker, String from, String to, Date date, double price, int quantity) {
+        if (!transactionsFor.containsKey(ticker)) {
+            transactionsFor.put(ticker, new ArrayList<>());
+        }
+        transactionsFor.get(ticker).add(new Transaction(date, from, to, price, quantity));
     }
 
     public void cancel(Order order) {

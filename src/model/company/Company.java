@@ -1,9 +1,11 @@
 package model.company;
 
+import database.DatabaseConnection;
 import model.exchange.Exchange;
 import model.exchange.Transaction;
 import utils.Utils;
 
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,7 +34,8 @@ public class Company {
         return exchanges.contains(e);
     }
 
-    public void listOn(Exchange e) {
+    public void listOn(Exchange e) throws SQLException {
+        DatabaseConnection.getInstance().listOn(e.getName(), this.ticker);
         exchanges.add(e);
     }
 

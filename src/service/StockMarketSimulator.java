@@ -8,6 +8,7 @@ import model.order.OrderType;
 import model.stocktrader.StockTrader;
 import utils.Utils;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class StockMarketSimulator {
@@ -35,9 +36,9 @@ public class StockMarketSimulator {
         Exchange nyse = new Exchange("NYSE"),
                 nasdaq = new Exchange("NASDAQ");
 
-        apple.listOn(nyse);
-        google.listOn(nyse);
-        tesla.listOn(nasdaq);
+//        apple.listOn(nyse);
+//        google.listOn(nyse);
+//        tesla.listOn(nasdaq);
 
         StockTrader warrenBuffet = new StockTrader("Warren Buffet"),
                 johnPaulson = new StockTrader("John Paulson");
@@ -86,7 +87,7 @@ public class StockMarketSimulator {
         for (Company c : companies) {
             for (int i = 0; i < cntListings; i++) {
                 int rnd = (int) Math.floor(Math.random() * cntExchanges);
-                c.listOn(exchanges.get(rnd));
+                // c.listOn(exchanges.get(rnd));
             }
         }
 
@@ -96,7 +97,7 @@ public class StockMarketSimulator {
 
             // cancel a random order with probability cancellationProb
             if (Math.random() <= cancellationProb) {
-                cancelRandomOrder(cntStockTraders);
+                // cancelRandomOrder(cntStockTraders);
             }
         }
 
@@ -155,7 +156,7 @@ public class StockMarketSimulator {
         }
     }
 
-    private void cancelRandomOrder(int cntStockTraders) {
+    private void cancelRandomOrder(int cntStockTraders) throws SQLException {
         int stockTraderIdx = (int) Math.floor(Math.random() * cntStockTraders);
 
         ArrayList<Order> activeOrders = stockTraders.get(stockTraderIdx).getActiveOrders();

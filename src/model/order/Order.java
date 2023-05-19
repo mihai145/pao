@@ -3,6 +3,7 @@ package model.order;
 import model.exchange.Exchange;
 import model.stocktrader.StockTrader;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 public abstract class Order {
@@ -27,12 +28,28 @@ public abstract class Order {
         this.id = ++Order.stamp;
     }
 
+    Order(long id, OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange, Date date) {
+        this.id = id;
+        this.orderAction = orderAction;
+        this.stockTrader = stockTrader;
+        this.ticker = ticker;
+        this.quantity = quantity;
+        this.price = price;
+        this.exchange = exchange;
+        this.date = date;
+        Order.stamp = Math.max(Order.stamp, id);
+    }
+
     public OrderAction getOrderAction() {
         return orderAction;
     }
 
     public StockTrader getStockTrader() {
         return stockTrader;
+    }
+
+    public Exchange getExchange() {
+        return exchange;
     }
 
     public String getTicker() {
@@ -59,7 +76,7 @@ public abstract class Order {
         exchange.cancel(this);
     }
 
-    public void notifyCompleted() {
+    public void notifyCompleted() throws SQLException {
         stockTrader.completeOrder(this);
     }
 
