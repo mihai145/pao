@@ -1,8 +1,8 @@
-package model.Order;
+package model.order;
 
 import exceptions.NoDataFoundForCompanyException;
-import model.Exchange.Exchange;
-import model.StockTrader.StockTrader;
+import model.exchange.Exchange;
+import model.stocktrader.StockTrader;
 
 public class MarketOrder extends Order {
     public MarketOrder(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, Exchange exchange) throws NoDataFoundForCompanyException {

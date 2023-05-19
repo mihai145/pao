@@ -1,6 +1,6 @@
-package model.Exchange.OrderComparators;
+package model.exchange.ordercomparator;
 
-import model.Order.Order;
+import model.order.Order;
 
 public class InverseOrderComparator implements java.util.Comparator<Order> {
     private static final OrderComparator comp = new OrderComparator();

@@ -1,7 +1,7 @@
-package model.Company;
+package model.company;
 
-import model.Exchange.Exchange;
-import model.Exchange.Transaction;
+import model.exchange.Exchange;
+import model.exchange.Transaction;
 import utils.Utils;
 
 import java.text.DecimalFormat;

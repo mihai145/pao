@@ -1,7 +1,7 @@
-package model.Order;
+package model.order;
 
-import model.Exchange.Exchange;
-import model.StockTrader.StockTrader;
+import model.exchange.Exchange;
+import model.stocktrader.StockTrader;
 
 import java.util.Date;
 

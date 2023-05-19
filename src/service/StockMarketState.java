@@ -1,8 +1,8 @@
 package service;
 
-import model.Company.Company;
-import model.Exchange.Exchange;
-import model.StockTrader.StockTrader;
+import model.company.Company;
+import model.exchange.Exchange;
+import model.stocktrader.StockTrader;
 
 import java.util.ArrayList;
 

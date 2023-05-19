@@ -1,4 +1,4 @@
-package model.Exchange;
+package model.exchange;
 
 import java.util.Date;
 

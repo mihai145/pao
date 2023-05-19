@@ -1,11 +1,11 @@
-package model.StockTrader;
+package model.stocktrader;
 
 import exceptions.CompanyNotListedOnExchangeException;
 import exceptions.InvalidOrderTypeException;
 import exceptions.NoDataFoundForCompanyException;
-import model.Company.Company;
-import model.Exchange.Exchange;
-import model.Order.*;
+import model.company.Company;
+import model.exchange.Exchange;
+import model.order.*;
 import utils.Utils;
 
 import java.util.ArrayList;

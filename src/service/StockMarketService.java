@@ -1,11 +1,11 @@
 package service;
 
-import model.Company.Company;
-import model.Exchange.Exchange;
-import model.Order.Order;
-import model.Order.OrderAction;
-import model.Order.OrderType;
-import model.StockTrader.StockTrader;
+import model.company.Company;
+import model.exchange.Exchange;
+import model.order.Order;
+import model.order.OrderAction;
+import model.order.OrderType;
+import model.stocktrader.StockTrader;
 
 import java.util.ArrayList;
 import java.util.Scanner;

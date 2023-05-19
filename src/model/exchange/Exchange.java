@@ -1,11 +1,11 @@
-package model.Exchange;
+package model.exchange;
 
 import exceptions.NoDataFoundForCompanyException;
-import model.Company.Company;
-import model.Exchange.OrderComparators.InverseOrderComparator;
-import model.Exchange.OrderComparators.OrderComparator;
-import model.Order.Order;
-import model.Order.OrderAction;
+import model.company.Company;
+import model.exchange.ordercomparator.InverseOrderComparator;
+import model.exchange.ordercomparator.OrderComparator;
+import model.order.Order;
+import model.order.OrderAction;
 import utils.Utils;
 
 import java.util.*;
