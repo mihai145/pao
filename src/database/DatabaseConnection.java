@@ -10,6 +10,7 @@ import service.StockMarketState;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class DatabaseConnection {
     private static DatabaseConnection instance = null;
@@ -86,10 +87,14 @@ public class DatabaseConnection {
             String exchangeName = rs.getString("exchange_name");
             String companyTicker = rs.getString("company_ticker");
 
-            Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
-            Company comp = companies.stream().filter(c -> c.getTicker().equals(companyTicker)).findFirst().get();
+            try {
+                Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
+                Company comp = companies.stream().filter(c -> c.getTicker().equals(companyTicker)).findFirst().get();
 
-            comp.listOn(exch);
+                comp.listOn(exch);
+            } catch (NoSuchElementException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -119,12 +124,12 @@ public class DatabaseConnection {
                 } else if (orderType == OrderType.ICEBERG) {
                     order = new IcebergOrder(id, orderAction, st, companyTicker, quantity, price, exch, date);
                 } else {
-                    order = new MarketOrder(id, orderAction, st, companyTicker, quantity, exch, date);
+                    order = new MarketOrder(id, orderAction, st, companyTicker, quantity, price, exch, date);
                 }
 
                 st.appendActiveOrder(order);
                 exch.addOrder(order);
-            } catch (InvalidOrderTypeException | NoDataFoundForCompanyException e) {
+            } catch (InvalidOrderTypeException | NoSuchElementException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -144,8 +149,12 @@ public class DatabaseConnection {
             double price = rs.getDouble("price");
             int quantity = rs.getInt("quantity");
 
-            Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
-            exch.addTransaction(companyTicker, stockTraderNameFrom, stockTraderNameTo, date, price, quantity);
+            try {
+                Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
+                exch.addTransaction(companyTicker, stockTraderNameFrom, stockTraderNameTo, date, price, quantity);
+            } catch (NoSuchElementException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -261,5 +270,14 @@ public class DatabaseConnection {
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setLong(1, order.getId());
         statement.executeUpdate();
+    }
+
+    public void eraseAll() throws SQLException {
+        String[] tables = {"EXCHANGES", "COMPANIES", "STOCKTRADERS", "LISTED_ON", "ORDERS", "TRANSACTIONS"};
+        for (String table : tables) {
+            String query = "DELETE FROM " + table;
+            Statement statement = connection.createStatement();
+            statement.execute(query);
+        }
     }
 }

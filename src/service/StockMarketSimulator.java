@@ -1,5 +1,6 @@
 package service;
 
+import database.DatabaseConnection;
 import model.company.Company;
 import model.exchange.Exchange;
 import model.order.Order;
@@ -28,7 +29,9 @@ public class StockMarketSimulator {
         return instance;
     }
 
-    public void simulate_manual() {
+    public void simulate_manual() throws SQLException {
+        DatabaseConnection.getInstance().eraseAll();
+
         Company apple = new Company("Apple", "AAPL"),
                 google = new Company("Google", "GOOG"),
                 tesla = new Company("Tesla", "TLSA");
@@ -36,9 +39,9 @@ public class StockMarketSimulator {
         Exchange nyse = new Exchange("NYSE"),
                 nasdaq = new Exchange("NASDAQ");
 
-//        apple.listOn(nyse);
-//        google.listOn(nyse);
-//        tesla.listOn(nasdaq);
+        apple.listOn(nyse);
+        google.listOn(nyse);
+        tesla.listOn(nasdaq);
 
         StockTrader warrenBuffet = new StockTrader("Warren Buffet"),
                 johnPaulson = new StockTrader("John Paulson");
@@ -67,46 +70,29 @@ public class StockMarketSimulator {
         }
     }
 
-    public StockMarketState simulate_automatic(int cntCompanies, int cntStockTraders, int cntExchanges, int cntListings, int cntOrders, double cancellationProb) {
-        // generate random companies
-        for (int i = 0; i < cntCompanies; i++) {
-            companies.add(new Company(Utils.random_string(10), Utils.random_string(4)));
-        }
+    public StockMarketState simulate_automatic(int cntCompanies, int cntStockTraders, int cntExchanges, int cntListings, int cntOrders, double cancellationProb) throws SQLException {
+        DatabaseConnection.getInstance().eraseAll();
 
-        // generate random stock traders
-        for (int i = 0; i < cntStockTraders; i++) {
-            stockTraders.add(new StockTrader(Utils.random_string(10)));
-        }
-
-        // generate random exchanges
-        for (int i = 0; i < cntExchanges; i++) {
-            exchanges.add(new Exchange(Utils.random_string(10)));
-        }
+        // generate entities
+        generateRandomCompanies(cntCompanies);
+        generateRandomStockTraders(cntStockTraders);
+        generateRandomExchanges(cntExchanges);
 
         // list companies on some exchanges
         for (Company c : companies) {
             for (int i = 0; i < cntListings; i++) {
                 int rnd = (int) Math.floor(Math.random() * cntExchanges);
-                // c.listOn(exchanges.get(rnd));
+                c.listOn(exchanges.get(rnd));
             }
         }
 
+        // generate a random order
         for (int i = 0; i < cntOrders; i++) {
-            // generate a random order
             generateRandomOrder(cntStockTraders, cntCompanies, cntExchanges);
 
             // cancel a random order with probability cancellationProb
             if (Math.random() <= cancellationProb) {
-                // cancelRandomOrder(cntStockTraders);
-            }
-        }
-
-        // show transactions for all companies
-        for (Company c : companies) {
-            for (Exchange e : exchanges) {
-                if (c.isListedOn(e)) {
-                    e.showTransactions(c);
-                }
+                cancelRandomOrder(cntStockTraders);
             }
         }
 
@@ -119,17 +105,43 @@ public class StockMarketSimulator {
             }
         }
 
-        // show active orders for stock traders
-        for (StockTrader t : stockTraders) {
-            t.showActiveOrders();
-        }
-
-        // show market price evolution for companies
-        for (Company c : companies) {
-            c.graphMarketPriceEvolution();
-        }
-
         return new StockMarketState(exchanges, companies, stockTraders);
+    }
+
+    private void generateRandomCompanies(int cntCompanies) {
+        for (int i = 0; i < cntCompanies; i++) {
+            String random_name = Utils.random_string(10), random_ticker = Utils.random_string(4);
+            try {
+                DatabaseConnection.getInstance().addCompany(random_name, random_ticker);
+                companies.add(new Company(random_name, random_ticker));
+            } catch (SQLException exception) {
+                System.out.printf("Exception occured: " + exception.getMessage());
+            }
+        }
+    }
+
+    private void generateRandomExchanges(int cntExchanges) {
+        for (int i = 0; i < cntExchanges; i++) {
+            String random_name = Utils.random_string(10);
+            try {
+                DatabaseConnection.getInstance().addExchange(random_name);
+                exchanges.add(new Exchange(random_name));
+            } catch (SQLException exception) {
+                System.out.printf("Exception occured: " + exception.getMessage());
+            }
+        }
+    }
+
+    private void generateRandomStockTraders(int cntStockTraders) {
+        for (int i = 0; i < cntStockTraders; i++) {
+            String random_name = Utils.random_string(10);
+            try {
+                DatabaseConnection.getInstance().addStockTrader(random_name);
+                stockTraders.add(new StockTrader(random_name));
+            } catch (SQLException exception) {
+                System.out.printf("Exception occured: " + exception.getMessage());
+            }
+        }
     }
 
     private void generateRandomOrder(int cntStockTraders, int cntCompanies, int cntExchanges) {
@@ -151,8 +163,8 @@ public class StockMarketSimulator {
                             companies.get(companyIdx),
                             price,
                             quantity);
-        } catch (Exception ignored) {
-            System.out.println("Error occured");
+        } catch (Exception e) {
+            System.out.println("Exception occured: " + e.getMessage());
         }
     }
 

@@ -11,8 +11,8 @@ public class MarketOrder extends Order {
         super(orderAction, stockTrader, ticker, quantity, getMarketPrice(orderAction, ticker, exchange), exchange);
     }
 
-    public MarketOrder(long id, OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, Exchange exchange, Date date) throws NoDataFoundForCompanyException {
-        super(id, orderAction, stockTrader, ticker, quantity, getMarketPrice(orderAction, ticker, exchange), exchange, date);
+    public MarketOrder(long id, OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange, Date date) {
+        super(id, orderAction, stockTrader, ticker, quantity, price, exchange, date);
     }
 
     static double getMarketPrice(OrderAction orderAction, String ticker, Exchange exchange) throws NoDataFoundForCompanyException {

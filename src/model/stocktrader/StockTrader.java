@@ -34,8 +34,9 @@ public class StockTrader {
     }
 
     public void placeOrder(OrderType ot, OrderAction oa, Exchange e, Company c, double price, int quantity) throws CompanyNotListedOnExchangeException, InvalidOrderTypeException, NoDataFoundForCompanyException, SQLException {
-        if (!c.isListedOn(e))
+        if (!c.isListedOn(e)) {
             throw new CompanyNotListedOnExchangeException(c.getName() + " is not listed on " + e.getName());
+        }
 
         Order order;
         if (ot == OrderType.LIMIT) {
@@ -45,7 +46,7 @@ public class StockTrader {
         } else if (ot == OrderType.MARKET) {
             order = new MarketOrder(oa, this, c.getTicker(), quantity, e);
         } else {
-            throw new InvalidOrderTypeException("model.Order.Order type " + ot.toString() + " does not exist");
+            throw new InvalidOrderTypeException("Order type " + ot.toString() + " does not exist");
         }
 
         DatabaseConnection.getInstance().addOrder(order);

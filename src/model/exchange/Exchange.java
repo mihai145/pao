@@ -1,5 +1,6 @@
 package model.exchange;
 
+import database.DatabaseConnection;
 import exceptions.NoDataFoundForCompanyException;
 import model.company.Company;
 import model.exchange.ordercomparator.InverseOrderComparator;
@@ -83,11 +84,14 @@ public class Exchange {
         }
     }
 
-    private void addTransaction(String ticker, String from, String to, double price, int quantity) {
+    private void addTransaction(String ticker, String from, String to, double price, int quantity) throws SQLException {
+        Date date = new Date();
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        DatabaseConnection.getInstance().addTransaction(name, ticker, sqlDate, from, to, price, quantity);
         if (!transactionsFor.containsKey(ticker)) {
             transactionsFor.put(ticker, new ArrayList<>());
         }
-        transactionsFor.get(ticker).add(new Transaction(new Date(), from, to, price, quantity));
+        transactionsFor.get(ticker).add(new Transaction(date, from, to, price, quantity));
     }
 
     public void addTransaction(String ticker, String from, String to, Date date, double price, int quantity) {
