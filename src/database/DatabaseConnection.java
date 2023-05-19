@@ -1,7 +1,6 @@
 package database;
 
 import exceptions.InvalidOrderTypeException;
-import exceptions.NoDataFoundForCompanyException;
 import model.company.Company;
 import model.exchange.Exchange;
 import model.order.*;
@@ -88,8 +87,8 @@ public class DatabaseConnection {
             String companyTicker = rs.getString("company_ticker");
 
             try {
-                Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
-                Company comp = companies.stream().filter(c -> c.getTicker().equals(companyTicker)).findFirst().get();
+                @SuppressWarnings("OptionalGetWithoutIsPresent") Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
+                @SuppressWarnings("OptionalGetWithoutIsPresent") Company comp = companies.stream().filter(c -> c.getTicker().equals(companyTicker)).findFirst().get();
 
                 comp.listOn(exch);
             } catch (NoSuchElementException e) {
@@ -115,8 +114,8 @@ public class DatabaseConnection {
                 double price = rs.getDouble("price");
                 int quantity = rs.getInt("quantity");
 
-                StockTrader st = stockTraders.stream().filter(t -> t.getName().equals(stockTraderName)).findFirst().get();
-                Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
+                @SuppressWarnings("OptionalGetWithoutIsPresent") StockTrader st = stockTraders.stream().filter(t -> t.getName().equals(stockTraderName)).findFirst().get();
+                @SuppressWarnings("OptionalGetWithoutIsPresent") Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
 
                 Order order;
                 if (orderType == OrderType.LIMIT) {
@@ -150,7 +149,7 @@ public class DatabaseConnection {
             int quantity = rs.getInt("quantity");
 
             try {
-                Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
+                @SuppressWarnings("OptionalGetWithoutIsPresent") Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
                 exch.addTransaction(companyTicker, stockTraderNameFrom, stockTraderNameTo, date, price, quantity);
             } catch (NoSuchElementException e) {
                 System.out.println(e.getMessage());
@@ -275,9 +274,13 @@ public class DatabaseConnection {
     public void eraseAll() throws SQLException {
         String[] tables = {"EXCHANGES", "COMPANIES", "STOCKTRADERS", "LISTED_ON", "ORDERS", "TRANSACTIONS"};
         for (String table : tables) {
-            String query = "DELETE FROM " + table;
+            @SuppressWarnings("SqlWithoutWhere") String query = "DELETE FROM " + table;
             Statement statement = connection.createStatement();
             statement.execute(query);
         }
+    }
+
+    public void close() throws SQLException {
+        connection.close();
     }
 }

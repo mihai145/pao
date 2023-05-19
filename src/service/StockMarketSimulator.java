@@ -1,5 +1,6 @@
 package service;
 
+import audit.Audit;
 import database.DatabaseConnection;
 import model.company.Company;
 import model.exchange.Exchange;
@@ -9,6 +10,7 @@ import model.order.OrderType;
 import model.stocktrader.StockTrader;
 import utils.Utils;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -51,7 +53,7 @@ public class StockMarketSimulator {
             warrenBuffet.placeOrder(OrderType.LIMIT, OrderAction.BUY, nyse, apple, 102, 20);
             johnPaulson.placeOrder(OrderType.LIMIT, OrderAction.SELL, nyse, apple, 100, 40);
         } catch (Exception e) {
-            System.out.println("Error occured: " + e);
+            System.out.println("Error occurred: " + e);
         }
 
         nyse.showTransactions(tesla);
@@ -66,12 +68,15 @@ public class StockMarketSimulator {
             johnPaulson.cancelOrder(johnPaulson.getActiveOrders().get(0));
             johnPaulson.showActiveOrders();
         } catch (Exception ignored) {
-            System.out.println("Error occured");
+            System.out.println("Error occurred");
         }
     }
 
-    public StockMarketState simulate_automatic(int cntCompanies, int cntStockTraders, int cntExchanges, int cntListings, int cntOrders, double cancellationProb) throws SQLException {
+    public StockMarketState simulate_automatic(int cntCompanies, int cntStockTraders, int cntExchanges, int cntListings, int cntOrders, double cancellationProb) throws SQLException, IOException {
         DatabaseConnection.getInstance().eraseAll();
+
+        Audit audit = Audit.getInstance();
+        audit.logSimulation();
 
         // generate entities
         generateRandomCompanies(cntCompanies);
@@ -83,6 +88,7 @@ public class StockMarketSimulator {
             for (int i = 0; i < cntListings; i++) {
                 int rnd = (int) Math.floor(Math.random() * cntExchanges);
                 c.listOn(exchanges.get(rnd));
+                audit.logCommand(ServiceCommand.LIST_COMPANY_ON_EXCHANGE);
             }
         }
 
@@ -93,6 +99,7 @@ public class StockMarketSimulator {
             // cancel a random order with probability cancellationProb
             if (Math.random() <= cancellationProb) {
                 cancelRandomOrder(cntStockTraders);
+                audit.logCommand(ServiceCommand.CANCEL_ORDER);
             }
         }
 
@@ -101,6 +108,7 @@ public class StockMarketSimulator {
             for (Exchange e : exchanges) {
                 if (c.isListedOn(e)) {
                     e.showOrders(c);
+                    audit.logCommand(ServiceCommand.SHOW_ACTIVE_ORDERS_FOR_COMPANY_ON_EXCHANGE);
                 }
             }
         }
@@ -114,8 +122,9 @@ public class StockMarketSimulator {
             try {
                 DatabaseConnection.getInstance().addCompany(random_name, random_ticker);
                 companies.add(new Company(random_name, random_ticker));
-            } catch (SQLException exception) {
-                System.out.printf("Exception occured: " + exception.getMessage());
+                Audit.getInstance().logCommand(ServiceCommand.ADD_COMPANY);
+            } catch (SQLException | IOException exception) {
+                System.out.printf("Exception occurred: " + exception.getMessage());
             }
         }
     }
@@ -126,8 +135,9 @@ public class StockMarketSimulator {
             try {
                 DatabaseConnection.getInstance().addExchange(random_name);
                 exchanges.add(new Exchange(random_name));
-            } catch (SQLException exception) {
-                System.out.printf("Exception occured: " + exception.getMessage());
+                Audit.getInstance().logCommand(ServiceCommand.ADD_EXCHANGE);
+            } catch (SQLException | IOException exception) {
+                System.out.printf("Exception occurred: " + exception.getMessage());
             }
         }
     }
@@ -138,8 +148,9 @@ public class StockMarketSimulator {
             try {
                 DatabaseConnection.getInstance().addStockTrader(random_name);
                 stockTraders.add(new StockTrader(random_name));
-            } catch (SQLException exception) {
-                System.out.printf("Exception occured: " + exception.getMessage());
+                Audit.getInstance().logCommand(ServiceCommand.ADD_STOCK_TRADER);
+            } catch (SQLException | IOException exception) {
+                System.out.printf("Exception occurred: " + exception.getMessage());
             }
         }
     }
@@ -163,8 +174,9 @@ public class StockMarketSimulator {
                             companies.get(companyIdx),
                             price,
                             quantity);
+            Audit.getInstance().logCommand(ServiceCommand.PLACE_ORDER);
         } catch (Exception e) {
-            System.out.println("Exception occured: " + e.getMessage());
+            System.out.println("Exception occurred: " + e.getMessage());
         }
     }
 

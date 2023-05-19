@@ -1,5 +1,6 @@
 package service;
 
+import audit.Audit;
 import database.DatabaseConnection;
 import model.company.Company;
 import model.exchange.Exchange;
@@ -8,33 +9,37 @@ import model.order.OrderAction;
 import model.order.OrderType;
 import model.stocktrader.StockTrader;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public class StockMarketService {
     static private StockMarketService instance = null;
     private final Scanner scanner;
     private final DatabaseConnection connection;
+    private final Audit audit;
     private ArrayList<Exchange> exchanges;
     private ArrayList<Company> companies;
     private ArrayList<StockTrader> stockTraders;
 
-    private StockMarketService() throws SQLException {
+    private StockMarketService() throws SQLException, IOException {
         this.scanner = new Scanner(System.in);
         this.connection = DatabaseConnection.getInstance();
+        this.audit = Audit.getInstance();
         this.exchanges = new ArrayList<>();
         this.companies = new ArrayList<>();
         this.stockTraders = new ArrayList<>();
     }
 
-    public static StockMarketService getStockMarketService() throws SQLException {
+    public static StockMarketService getStockMarketService() throws SQLException, IOException {
         if (instance == null) instance = new StockMarketService();
         instance.loadState(instance.connection.getState());
         return instance;
     }
 
-    public static StockMarketService getStockMarketService(StockMarketState state) throws SQLException {
+    public static StockMarketService getStockMarketService(StockMarketState state) throws SQLException, IOException {
         if (instance == null) instance = new StockMarketService();
         instance.loadState(state);
         return instance;
@@ -70,8 +75,16 @@ public class StockMarketService {
     public void runService() {
         while (true) {
             ServiceCommand command = getCommand();
+            audit.logCommand(command);
 
             if (command == ServiceCommand.QUIT) {
+                try {
+                    connection.close();
+                    audit.close();
+                } catch (Exception exception) {
+                    System.out.println("Exception occurred while closing resources: " + exception.getMessage());
+                }
+
                 System.out.println("Service shut down");
                 break;
             }
@@ -168,7 +181,6 @@ public class StockMarketService {
         }
 
         StockTrader t = chooseStockTrader();
-
         OrderType ot = chooseOrderType();
         OrderAction oa = chooseOrderAction();
         Company c = chooseCompany();
@@ -262,9 +274,8 @@ public class StockMarketService {
 
     private Exchange chooseExchange() {
         System.out.println("Choose an exchange from:");
-        for (int i = 0; i < exchanges.size(); i++) {
-            System.out.println((i + 1) + ". " + exchanges.get(i).getName());
-        }
+        IntStream.range(0, exchanges.size())
+                .forEach(idx -> System.out.println((idx + 1) + ". " + exchanges.get(idx).getName()));
 
         int exchange;
         do {
@@ -277,9 +288,8 @@ public class StockMarketService {
 
     private Company chooseCompany() {
         System.out.println("Choose a company from:");
-        for (int i = 0; i < companies.size(); i++) {
-            System.out.println((i + 1) + ". " + companies.get(i).getName() + " - " + companies.get(i).getTicker());
-        }
+        IntStream.range(0, companies.size())
+                .forEach(idx -> System.out.println((idx + 1) + ". " + companies.get(idx).getName()));
 
         int company;
         do {
@@ -292,9 +302,8 @@ public class StockMarketService {
 
     private StockTrader chooseStockTrader() {
         System.out.println("Choose a stock trader from:");
-        for (int i = 0; i < stockTraders.size(); i++) {
-            System.out.println((i + 1) + ". " + stockTraders.get(i).getName());
-        }
+        IntStream.range(0, stockTraders.size())
+                .forEach(idx -> System.out.println((idx + 1) + ". " + stockTraders.get(idx).getName()));
 
         int stockTrader;
         do {
@@ -307,9 +316,8 @@ public class StockMarketService {
 
     private Order chooseOrder(StockTrader t) {
         System.out.println("Choose an order from:");
-        for (int i = 0; i < t.getActiveOrders().size(); i++) {
-            System.out.println((i + 1) + ". " + t.getActiveOrders().get(i).toString());
-        }
+        IntStream.range(0, t.getActiveOrders().size())
+                .forEach(idx -> System.out.println((idx + 1) + ". " + t.getActiveOrders().get(idx).toString()));
 
         int order;
         do {

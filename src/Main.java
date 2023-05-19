@@ -2,6 +2,7 @@ import service.StockMarketService;
 import service.StockMarketSimulator;
 import service.StockMarketState;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -23,6 +24,8 @@ public class Main {
             service.runService();
         } catch (SQLException e) {
             System.out.println("Could not connect to database: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Could not open the audit file: " + e.getMessage());
         }
     }
 }

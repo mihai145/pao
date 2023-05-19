@@ -49,12 +49,7 @@ public class Company {
             transactions.addAll(e.getTransactionsFor(ticker));
         }
 
-        transactions.sort(new Comparator<>() {
-            @Override
-            public int compare(Transaction o1, Transaction o2) {
-                return o1.date().compareTo(o2.date());
-            }
-        });
+        transactions.sort(Comparator.comparing(Transaction::date));
 
         if (transactions.size() == 0) {
             System.out.println(name + " has no transaction history");
