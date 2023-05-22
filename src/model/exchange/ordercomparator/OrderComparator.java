@@ -2,6 +2,7 @@ package model.exchange.ordercomparator;
 
 import model.order.Order;
 
+// Sort orders ascending by price
 public class OrderComparator implements java.util.Comparator<Order> {
     @Override
     public int compare(Order o1, Order o2) {

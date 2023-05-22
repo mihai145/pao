@@ -6,10 +6,12 @@ import model.stocktrader.StockTrader;
 import java.util.Date;
 
 public class IcebergOrder extends Order {
+    // Constructor for an iceberg order generated online
     public IcebergOrder(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange) {
         super(orderAction, stockTrader, ticker, quantity, price, exchange);
     }
 
+    // Constructor for an iceberg order retrieved from database
     public IcebergOrder(long id, OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange, Date date) {
         super(id, orderAction, stockTrader, ticker, quantity, price, exchange, date);
     }
@@ -20,7 +22,6 @@ public class IcebergOrder extends Order {
     }
 
     @Override
-    public String displayOnExchange() {
-        return getOrderAction().name() + " price: " + getPrice() + " quantity: " + getQuantity();
+    public void displayOnExchange() {
     }
 }

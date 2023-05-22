@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+// Singleton class for simulating the stock market
 public class StockMarketSimulator {
     private static StockMarketSimulator instance;
     private final ArrayList<Company> companies;
@@ -31,6 +32,7 @@ public class StockMarketSimulator {
         return instance;
     }
 
+    // used for manual testing
     public void simulate_manual() throws SQLException {
         DatabaseConnection.getInstance().eraseAll();
 
@@ -113,9 +115,11 @@ public class StockMarketSimulator {
             }
         }
 
+        // exports the current stock market state, to be used in the stock market service class
         return new StockMarketState(exchanges, companies, stockTraders);
     }
 
+    // generates random companies
     private void generateRandomCompanies(int cntCompanies) {
         for (int i = 0; i < cntCompanies; i++) {
             String random_name = Utils.random_string(10), random_ticker = Utils.random_string(4);
@@ -129,6 +133,7 @@ public class StockMarketSimulator {
         }
     }
 
+    // generates random exchanges
     private void generateRandomExchanges(int cntExchanges) {
         for (int i = 0; i < cntExchanges; i++) {
             String random_name = Utils.random_string(10);
@@ -142,6 +147,7 @@ public class StockMarketSimulator {
         }
     }
 
+    // generates random stock traders
     private void generateRandomStockTraders(int cntStockTraders) {
         for (int i = 0; i < cntStockTraders; i++) {
             String random_name = Utils.random_string(10);
@@ -155,17 +161,23 @@ public class StockMarketSimulator {
         }
     }
 
+    // generates random orders
     private void generateRandomOrder(int cntStockTraders, int cntCompanies, int cntExchanges) {
+        // choose the order type and action
         OrderType ot = Math.random() < 0.33 ? OrderType.LIMIT : (Math.random() < 0.33 ? OrderType.ICEBERG : OrderType.MARKET);
         OrderAction oa = Math.random() < 0.5 ? OrderAction.BUY : OrderAction.SELL;
 
+        // choose the stock trader, company and exchange involved
         int stockTraderIdx = (int) Math.floor(Math.random() * cntStockTraders);
         int companyIdx = (int) Math.floor(Math.random() * cntCompanies);
         int exchangeIdx = (int) Math.floor(Math.random() * cntExchanges);
 
+        // choose the price and quantity
         double price = Math.random() * 100;
         int quantity = 1 + (int) Math.floor(Math.random() * 100);
 
+        // try to place the order
+        // it might fail in case of a market order, when there are no outstanding orders on the exchange
         try {
             stockTraders
                     .get(stockTraderIdx)
@@ -180,12 +192,15 @@ public class StockMarketSimulator {
         }
     }
 
+    // cancel a random order
     private void cancelRandomOrder(int cntStockTraders) throws SQLException {
+        // choose the stock trader
         int stockTraderIdx = (int) Math.floor(Math.random() * cntStockTraders);
 
         ArrayList<Order> activeOrders = stockTraders.get(stockTraderIdx).getActiveOrders();
         if (activeOrders.size() == 0) return;
 
+        // cancel one of his orders
         int orderIdx = (int) Math.floor(Math.random() * activeOrders.size());
         stockTraders
                 .get(stockTraderIdx)

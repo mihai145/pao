@@ -7,7 +7,6 @@ import exceptions.NoDataFoundForCompanyException;
 import model.company.Company;
 import model.exchange.Exchange;
 import model.order.*;
-import utils.Utils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,20 +32,19 @@ public class StockTrader {
         activeOrders.add(order);
     }
 
+    // place a new order
     public void placeOrder(OrderType ot, OrderAction oa, Exchange e, Company c, double price, int quantity) throws CompanyNotListedOnExchangeException, InvalidOrderTypeException, NoDataFoundForCompanyException, SQLException {
         if (!c.isListedOn(e)) {
             throw new CompanyNotListedOnExchangeException(c.getName() + " is not listed on " + e.getName());
         }
 
+        // instantiate the correct order type
         Order order;
-        if (ot == OrderType.LIMIT) {
-            order = new LimitOrder(oa, this, c.getTicker(), quantity, price, e);
-        } else if (ot == OrderType.ICEBERG) {
-            order = new IcebergOrder(oa, this, c.getTicker(), quantity, price, e);
-        } else if (ot == OrderType.MARKET) {
-            order = new MarketOrder(oa, this, c.getTicker(), quantity, e);
-        } else {
-            throw new InvalidOrderTypeException("Order type " + ot.toString() + " does not exist");
+        switch (ot) {
+            case LIMIT -> order = new LimitOrder(oa, this, c.getTicker(), quantity, price, e);
+            case ICEBERG -> order = new IcebergOrder(oa, this, c.getTicker(), quantity, price, e);
+            case MARKET -> order = new MarketOrder(oa, this, c.getTicker(), quantity, e);
+            default -> throw new InvalidOrderTypeException("Order type " + ot.toString() + " does not exist");
         }
 
         DatabaseConnection.getInstance().addOrder(order);
@@ -54,9 +52,8 @@ public class StockTrader {
         e.addOrder(order);
     }
 
+    // show active orders for this stock trader
     public void showActiveOrders() {
-        Utils.output_separator();
-
         if (activeOrders.size() == 0) {
             System.out.println(name + " has no active orders");
             return;
@@ -68,6 +65,7 @@ public class StockTrader {
         }
     }
 
+    // cancel an order
     public void cancelOrder(Order order) throws SQLException {
         if (!activeOrders.contains(order)) {
             System.out.println("Invalid order");
@@ -79,6 +77,7 @@ public class StockTrader {
         activeOrders.remove(order);
     }
 
+    // mark an order as complete
     public void completeOrder(Order order) throws SQLException {
         DatabaseConnection.getInstance().removeOrder(order);
         activeOrders.remove(order);

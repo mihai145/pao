@@ -3,7 +3,6 @@ package model.company;
 import database.DatabaseConnection;
 import model.exchange.Exchange;
 import model.exchange.Transaction;
-import utils.Utils;
 
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -34,23 +33,26 @@ public class Company {
         return exchanges.contains(e);
     }
 
+    // list company on the exchange
     public void listOn(Exchange e) throws SQLException {
         DatabaseConnection.getInstance().listOn(e.getName(), this.ticker);
         exchanges.add(e);
     }
 
+    // graph the market price evolution of the company
     public void graphMarketPriceEvolution() {
-        Utils.output_separator();
-
         System.out.println("Market price evolution for " + name + " {" + ticker + "}:");
 
+        // collect all the transactions for the company on all the exchanges that it is listed on
         ArrayList<Transaction> transactions = new ArrayList<>();
         for (Exchange e : exchanges) {
             transactions.addAll(e.getTransactionsFor(ticker));
         }
 
+        // sort the transactions ascending by date
         transactions.sort(Comparator.comparing(Transaction::date));
 
+        // print the evolution of prices
         if (transactions.size() == 0) {
             System.out.println(name + " has no transaction history");
         } else {
@@ -59,7 +61,6 @@ public class Company {
 
             for (int i = 0; i < transactions.size(); i++) {
                 String formattedPrice = decimalFormat.format(transactions.get(i).price());
-
                 System.out.println((i + 1) + ". " + formattedPrice + "$ " + transactions.get(i).date());
             }
         }

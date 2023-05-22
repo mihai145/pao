@@ -2,6 +2,7 @@ package model.exchange.ordercomparator;
 
 import model.order.Order;
 
+// Sort orders descending by price
 public class InverseOrderComparator implements java.util.Comparator<Order> {
     private static final OrderComparator comp = new OrderComparator();
 

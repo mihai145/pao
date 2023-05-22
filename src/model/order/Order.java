@@ -6,6 +6,8 @@ import model.stocktrader.StockTrader;
 import java.sql.SQLException;
 import java.util.Date;
 
+// Abstract class for orders
+// Extended by the different specializations of orders
 public abstract class Order {
     protected static long stamp; // unique auto-incrementing id assigned to all orders
     protected final OrderAction orderAction;
@@ -17,6 +19,7 @@ public abstract class Order {
     protected double price;
     protected int quantity; // may be modified by splitting the order
 
+    // Constructor for an order generated online
     Order(OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange) {
         this.orderAction = orderAction;
         this.stockTrader = stockTrader;
@@ -28,6 +31,7 @@ public abstract class Order {
         this.id = ++Order.stamp;
     }
 
+    // Constructor for an order retrieved from database
     Order(long id, OrderAction orderAction, StockTrader stockTrader, String ticker, int quantity, double price, Exchange exchange, Date date) {
         this.id = id;
         this.orderAction = orderAction;
@@ -87,7 +91,9 @@ public abstract class Order {
                 + ", listed on=" + exchange.getName() + "]";
     }
 
-    public abstract String displayOnExchange();
+    // Different types of orders have different display characteristics
+    // Iceberg orders, for example, provide less information than other kinds of orders
+    public abstract void displayOnExchange();
 
     @Override
     public boolean equals(Object obj) {

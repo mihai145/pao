@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
+// Singleton service class
 public class StockMarketService {
     static private StockMarketService instance = null;
     private final Scanner scanner;
@@ -33,12 +34,14 @@ public class StockMarketService {
         this.stockTraders = new ArrayList<>();
     }
 
+    // start the service with current data
     public static StockMarketService getStockMarketService() throws SQLException, IOException {
         if (instance == null) instance = new StockMarketService();
         instance.loadState(instance.connection.getState());
         return instance;
     }
 
+    // start the service with a given state
     public static StockMarketService getStockMarketService(StockMarketState state) throws SQLException, IOException {
         if (instance == null) instance = new StockMarketService();
         instance.loadState(state);
@@ -51,6 +54,7 @@ public class StockMarketService {
         this.stockTraders = state.stockTraders();
     }
 
+    // parses user command
     private ServiceCommand getCommand() {
         System.out.println("Available commands:");
         for (ServiceCommand c : ServiceCommand.values()) {
@@ -72,11 +76,14 @@ public class StockMarketService {
         return ServiceCommand.QUIT;
     }
 
+    // main loop
     public void runService() {
         while (true) {
+            // parse user command
             ServiceCommand command = getCommand();
             audit.logCommand(command);
 
+            // quit the interactive menu and close the resources
             if (command == ServiceCommand.QUIT) {
                 try {
                     connection.close();
@@ -89,6 +96,7 @@ public class StockMarketService {
                 break;
             }
 
+            // handle commands
             switch (command) {
                 case ADD_EXCHANGE -> handleAddExchange();
                 case ADD_COMPANY -> handleAddCompany();
@@ -104,6 +112,7 @@ public class StockMarketService {
         }
     }
 
+    // adds a new exchange
     private void handleAddExchange() {
         System.out.println("Exchange name:");
         String name = scanner.next();
@@ -117,6 +126,7 @@ public class StockMarketService {
         }
     }
 
+    // adds a new company
     private void handleAddCompany() {
         System.out.println("Company name:");
         String name = scanner.next();
@@ -132,6 +142,7 @@ public class StockMarketService {
         }
     }
 
+    // adds a new stock trader
     private void handleAddStockTrader() {
         System.out.println("Stock trader name:");
         String name = scanner.next();
@@ -145,6 +156,7 @@ public class StockMarketService {
         }
     }
 
+    // lists a company on an exchange
     private void handleListCompanyOnExchange() {
         if (companies.size() == 0) {
             System.out.println("There are no companies");
@@ -155,6 +167,7 @@ public class StockMarketService {
             return;
         }
 
+        // choose the company you want to list and the desired exchange
         Company c = chooseCompany();
         Exchange e = chooseExchange();
 
@@ -166,6 +179,7 @@ public class StockMarketService {
         }
     }
 
+    // places an order
     private void handlePlaceOrder() {
         if (stockTraders.size() == 0) {
             System.out.println("There are no stock traders");
@@ -180,16 +194,18 @@ public class StockMarketService {
             return;
         }
 
+        // choose the trader, company and exchange on which to place the order
         StockTrader t = chooseStockTrader();
-        OrderType ot = chooseOrderType();
-        OrderAction oa = chooseOrderAction();
         Company c = chooseCompany();
         Exchange e = chooseExchange();
 
+        // configure the order type and action
+        OrderType ot = chooseOrderType();
+        OrderAction oa = chooseOrderAction();
+
+        // configure the order price and quantity
         double price = 0.;
-        if (ot != OrderType.MARKET) {
-            price = choosePrice();
-        }
+        if (ot != OrderType.MARKET) price = choosePrice();
         int quantity = chooseQuantity();
 
         try {
@@ -200,20 +216,22 @@ public class StockMarketService {
         }
     }
 
+    // cancels an order
     private void handleCancelOrder() {
         if (stockTraders.size() == 0) {
             System.out.println("There are no stock traders");
             return;
         }
 
+        // choose the stock trader whose order you want to cancel
         StockTrader t = chooseStockTrader();
         if (t.getActiveOrders().size() == 0) {
             System.out.println(t.getName() + " has no active orders");
             return;
         }
 
+        // choose the desired order amongst the stock trader's orders
         Order o = chooseOrder(t);
-
         try {
             t.cancelOrder(o);
             System.out.println("model.Order.Order cancelled");
@@ -222,6 +240,7 @@ public class StockMarketService {
         }
     }
 
+    // shows all transactions for a company on an exchange
     private void handleShowTransactions() {
         if (companies.size() == 0) {
             System.out.println("There are no companies");
@@ -232,11 +251,14 @@ public class StockMarketService {
             return;
         }
 
+        // choose the desired company and exchange
         Company c = chooseCompany();
         Exchange e = chooseExchange();
+
         e.showTransactions(c);
     }
 
+    // show active orders for a given company on a given exchange
     private void handleShowActiveOrdersExchange() {
         if (companies.size() == 0) {
             System.out.println("There are no companies");
@@ -247,31 +269,40 @@ public class StockMarketService {
             return;
         }
 
+        // choose the desired company and exchange
         Company c = chooseCompany();
         Exchange e = chooseExchange();
+
         e.showOrders(c);
     }
 
+    // show active orders for a given stock trader
     private void handleShowActiveOrdersStockTrader() {
         if (stockTraders.size() == 0) {
             System.out.println("There are no stock traders");
             return;
         }
 
+        // choose the desired stock trader
         StockTrader t = chooseStockTrader();
+
         t.showActiveOrders();
     }
 
+    // show the market price evolution of a given company
     private void handleShowMarketPriceEvolution() {
         if (companies.size() == 0) {
             System.out.println("There are no companies");
             return;
         }
 
+        // choose the desired company
         Company c = chooseCompany();
+
         c.graphMarketPriceEvolution();
     }
 
+    // parse user's choice of exchange
     private Exchange chooseExchange() {
         System.out.println("Choose an exchange from:");
         IntStream.range(0, exchanges.size())
@@ -286,6 +317,7 @@ public class StockMarketService {
         return exchanges.get(exchange - 1);
     }
 
+    // parse user's choice of company
     private Company chooseCompany() {
         System.out.println("Choose a company from:");
         IntStream.range(0, companies.size())
@@ -300,6 +332,7 @@ public class StockMarketService {
         return companies.get(company - 1);
     }
 
+    // parse user's choice of stock trader
     private StockTrader chooseStockTrader() {
         System.out.println("Choose a stock trader from:");
         IntStream.range(0, stockTraders.size())
@@ -314,6 +347,7 @@ public class StockMarketService {
         return stockTraders.get(stockTrader - 1);
     }
 
+    // parse user's choice of order from a given stock trader
     private Order chooseOrder(StockTrader t) {
         System.out.println("Choose an order from:");
         IntStream.range(0, t.getActiveOrders().size())
@@ -328,6 +362,7 @@ public class StockMarketService {
         return t.getActiveOrders().get(order - 1);
     }
 
+    // parse user's choice of order type
     private OrderType chooseOrderType() {
         System.out.println("Choose order type from:");
         for (OrderType ot : OrderType.values()) {
@@ -344,6 +379,7 @@ public class StockMarketService {
         } while (true);
     }
 
+    // parse user's choice of order action
     private OrderAction chooseOrderAction() {
         System.out.println("Choose order action from:");
         for (OrderAction oa : OrderAction.values()) {
@@ -360,6 +396,7 @@ public class StockMarketService {
         } while (true);
     }
 
+    // parse user's choice of price
     private double choosePrice() {
         double price;
         do {
@@ -370,6 +407,7 @@ public class StockMarketService {
         return price;
     }
 
+    // parse user's choice of quantity
     private int chooseQuantity() {
         int quantity;
         do {
