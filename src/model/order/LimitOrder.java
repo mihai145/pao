@@ -2,6 +2,7 @@ package model.order;
 
 import model.exchange.Exchange;
 import model.stocktrader.StockTrader;
+import utils.Utils;
 
 import java.util.Date;
 
@@ -23,5 +24,6 @@ public class LimitOrder extends Order {
 
     @Override
     public void displayOnExchange() {
+        System.out.println(orderAction + " price=" + Utils.format_decimal(price, "#.###") + " quantity=" + quantity);
     }
 }

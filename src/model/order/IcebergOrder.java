@@ -22,6 +22,7 @@ public class IcebergOrder extends Order {
     }
 
     @Override
-    public void displayOnExchange() {
+    public void displayOnExchange() { // iceberg orders do not show info regarding price and quantity
+        System.out.println(orderAction);
     }
 }

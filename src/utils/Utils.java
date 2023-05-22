@@ -1,5 +1,7 @@
 package utils;
 
+import java.text.DecimalFormat;
+
 // Utility class
 public final class Utils {
     private static final int CHARS_LENGTH;
@@ -27,5 +29,11 @@ public final class Utils {
             builder.append(CHARS[rnd]);
         }
         return builder.toString();
+    }
+
+    // formats a decimal number using a given pattern
+    public static String format_decimal(double price, String pattern) {
+        DecimalFormat decimalFormat = new DecimalFormat(pattern);
+        return decimalFormat.format(price);
     }
 }

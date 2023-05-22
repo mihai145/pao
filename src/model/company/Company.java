@@ -3,6 +3,7 @@ package model.company;
 import database.DatabaseConnection;
 import model.exchange.Exchange;
 import model.exchange.Transaction;
+import utils.Utils;
 
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -56,13 +57,7 @@ public class Company {
         if (transactions.size() == 0) {
             System.out.println(name + " has no transaction history");
         } else {
-            String pattern = "#.###";
-            DecimalFormat decimalFormat = new DecimalFormat(pattern);
-
-            for (int i = 0; i < transactions.size(); i++) {
-                String formattedPrice = decimalFormat.format(transactions.get(i).price());
-                System.out.println((i + 1) + ". " + formattedPrice + "$ " + transactions.get(i).date());
-            }
+            transactions.forEach(t -> System.out.println(Utils.format_decimal(t.price(), "#.###") + "$ " + t.date()));
         }
     }
 }
