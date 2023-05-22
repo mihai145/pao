@@ -44,7 +44,7 @@ public class StockTrader {
             case LIMIT -> order = new LimitOrder(oa, this, c.getTicker(), quantity, price, e);
             case ICEBERG -> order = new IcebergOrder(oa, this, c.getTicker(), quantity, price, e);
             case MARKET -> order = new MarketOrder(oa, this, c.getTicker(), quantity, e);
-            default -> throw new InvalidOrderTypeException("Order type " + ot.toString() + " does not exist");
+            default -> throw new InvalidOrderTypeException("Order type " + ot + " does not exist");
         }
 
         DatabaseConnection.getInstance().addOrder(order);

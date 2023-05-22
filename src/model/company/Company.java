@@ -6,7 +6,6 @@ import model.exchange.Transaction;
 import utils.Utils;
 
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;

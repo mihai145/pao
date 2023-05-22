@@ -124,7 +124,7 @@ public class DatabaseConnection {
                 String stockTraderName = rs.getString("stocktrader_name");
                 String companyTicker = rs.getString("company_ticker");
                 String exchangeName = rs.getString("exchange_name");
-                Date date = rs.getDate("date");
+                Timestamp date = rs.getTimestamp("date");
                 double price = rs.getDouble("price");
                 int quantity = rs.getInt("quantity");
 
@@ -136,10 +136,10 @@ public class DatabaseConnection {
                 Order order;
                 switch (orderType) {
                     case LIMIT ->
-                            order = new LimitOrder(id, orderAction, st, companyTicker, quantity, price, exch, date);
+                            order = new LimitOrder(id, orderAction, st, companyTicker, quantity, price, exch, new Date(date.getTime()));
                     case ICEBERG ->
-                            order = new IcebergOrder(id, orderAction, st, companyTicker, quantity, price, exch, date);
-                    default -> order = new MarketOrder(id, orderAction, st, companyTicker, quantity, price, exch, date);
+                            order = new IcebergOrder(id, orderAction, st, companyTicker, quantity, price, exch, new Date(date.getTime()));
+                    default -> order = new MarketOrder(id, orderAction, st, companyTicker, quantity, price, exch, new Date(date.getTime()));
                 }
 
                 st.appendActiveOrder(order);
@@ -162,14 +162,14 @@ public class DatabaseConnection {
             String exchangeName = rs.getString("exchange_name");
             String stockTraderNameFrom = rs.getString("stocktrader_name_from");
             String stockTraderNameTo = rs.getString("stocktrader_name_to");
-            Date date = rs.getDate("date");
+            Timestamp date = rs.getTimestamp("date");
             double price = rs.getDouble("price");
             int quantity = rs.getInt("quantity");
 
             // assuming the database is not corrupt, these statements should not fail
             try {
                 @SuppressWarnings("OptionalGetWithoutIsPresent") Exchange exch = exchanges.stream().filter(e -> e.getName().equals(exchangeName)).findFirst().get();
-                exch.addTransaction(companyTicker, stockTraderNameFrom, stockTraderNameTo, date, price, quantity);
+                exch.addTransaction(companyTicker, stockTraderNameFrom, stockTraderNameTo, new Date(date.getTime()), price, quantity);
             } catch (NoSuchElementException e) {
                 System.out.println(e.getMessage());
             }
@@ -246,17 +246,6 @@ public class DatabaseConnection {
                                String stockTraderNameTo,
                                double price,
                                int quantity) throws SQLException {
-        String count = "SELECT COUNT(*) AS cnt FROM transactions WHERE date=? AND company_ticker=?";
-        PreparedStatement pstmt = connection.prepareStatement(count);
-        pstmt.setDate(1, date);
-        pstmt.setString(2, companyTicker);
-
-        ResultSet rs = pstmt.executeQuery();
-        rs.next();
-        int cnt = rs.getInt("cnt");
-
-        // add the transaction only if it does not exist already
-        if (cnt == 0) {
             String query = "INSERT INTO TRANSACTIONS (exchange_name, company_ticker, date, stocktrader_name_from, stocktrader_name_to, price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
 
@@ -270,7 +259,6 @@ public class DatabaseConnection {
             statement.setInt(7, quantity);
 
             statement.executeUpdate();
-        }
     }
 
     // adds an order to the database
