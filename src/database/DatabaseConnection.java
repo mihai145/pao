@@ -139,7 +139,8 @@ public class DatabaseConnection {
                             order = new LimitOrder(id, orderAction, st, companyTicker, quantity, price, exch, new Date(date.getTime()));
                     case ICEBERG ->
                             order = new IcebergOrder(id, orderAction, st, companyTicker, quantity, price, exch, new Date(date.getTime()));
-                    default -> order = new MarketOrder(id, orderAction, st, companyTicker, quantity, price, exch, new Date(date.getTime()));
+                    default ->
+                            order = new MarketOrder(id, orderAction, st, companyTicker, quantity, price, exch, new Date(date.getTime()));
                 }
 
                 st.appendActiveOrder(order);
@@ -246,19 +247,19 @@ public class DatabaseConnection {
                                String stockTraderNameTo,
                                double price,
                                int quantity) throws SQLException {
-            String query = "INSERT INTO TRANSACTIONS (exchange_name, company_ticker, date, stocktrader_name_from, stocktrader_name_to, price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement statement = connection.prepareStatement(query);
+        String query = "INSERT INTO TRANSACTIONS (exchange_name, company_ticker, date, stocktrader_name_from, stocktrader_name_to, price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement statement = connection.prepareStatement(query);
 
-            // populate attributes
-            statement.setString(1, exchangeName);
-            statement.setString(2, companyTicker);
-            statement.setDate(3, date);
-            statement.setString(4, stockTraderNameFrom);
-            statement.setString(5, stockTraderNameTo);
-            statement.setDouble(6, price);
-            statement.setInt(7, quantity);
+        // populate attributes
+        statement.setString(1, exchangeName);
+        statement.setString(2, companyTicker);
+        statement.setDate(3, date);
+        statement.setString(4, stockTraderNameFrom);
+        statement.setString(5, stockTraderNameTo);
+        statement.setDouble(6, price);
+        statement.setInt(7, quantity);
 
-            statement.executeUpdate();
+        statement.executeUpdate();
     }
 
     // adds an order to the database
