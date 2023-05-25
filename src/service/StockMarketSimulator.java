@@ -128,7 +128,7 @@ public class StockMarketSimulator {
                 companies.add(new Company(random_name, random_ticker));
                 Audit.getInstance().logCommand(ServiceCommand.ADD_COMPANY);
             } catch (SQLException | IOException exception) {
-                System.out.printf("Exception occurred: " + exception.getMessage());
+                System.out.printf("Simulation warning: " + exception.getMessage());
             }
         }
     }
@@ -142,7 +142,7 @@ public class StockMarketSimulator {
                 exchanges.add(new Exchange(random_name));
                 Audit.getInstance().logCommand(ServiceCommand.ADD_EXCHANGE);
             } catch (SQLException | IOException exception) {
-                System.out.printf("Exception occurred: " + exception.getMessage());
+                System.out.printf("Simulation warning: " + exception.getMessage());
             }
         }
     }
@@ -156,7 +156,7 @@ public class StockMarketSimulator {
                 stockTraders.add(new StockTrader(random_name));
                 Audit.getInstance().logCommand(ServiceCommand.ADD_STOCK_TRADER);
             } catch (SQLException | IOException exception) {
-                System.out.printf("Exception occurred: " + exception.getMessage());
+                System.out.printf("Simulation warning: " + exception.getMessage());
             }
         }
     }
@@ -188,7 +188,7 @@ public class StockMarketSimulator {
                             quantity);
             Audit.getInstance().logCommand(ServiceCommand.PLACE_ORDER);
         } catch (Exception e) {
-            System.out.println("Exception occurred: " + e.getMessage());
+            System.out.println("Simulation warning: " + e.getMessage());
         }
     }
 

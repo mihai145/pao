@@ -28,6 +28,11 @@ public class Exchange {
         return name;
     }
 
+    public void setName(String name) throws SQLException {
+        DatabaseConnection.getInstance().renameExchange(this.name, name);
+        this.name = name;
+    }
+
     // get all the transactions on this exchange for a given company
     public ArrayList<Transaction> getTransactionsFor(String ticker) {
         if (!transactionsFor.containsKey(ticker)) return new ArrayList<>();

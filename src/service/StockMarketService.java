@@ -101,6 +101,8 @@ public class StockMarketService {
                 case ADD_EXCHANGE -> handleAddExchange();
                 case ADD_COMPANY -> handleAddCompany();
                 case ADD_STOCK_TRADER -> handleAddStockTrader();
+                case RENAME_EXCHANGE -> handleRenameExchange();
+                case RENAME_STOCK_TRADER -> handleRenameStockTrader();
                 case LIST_COMPANY_ON_EXCHANGE -> handleListCompanyOnExchange();
                 case PLACE_ORDER -> handlePlaceOrder();
                 case CANCEL_ORDER -> handleCancelOrder();
@@ -153,6 +155,46 @@ public class StockMarketService {
             System.out.println("Stock trader added");
         } catch (SQLException exception) {
             System.out.println("Error adding the stock trader: " + exception.getMessage());
+        }
+    }
+
+    // rename an exchange
+    private void handleRenameExchange() {
+        if (exchanges.size() == 0) {
+            System.out.println("There are no exchanges");
+            return;
+        }
+
+        // choose the exchange to rename
+        Exchange e = chooseExchange();
+        System.out.println("New name: ");
+        String newName = scanner.next();
+
+        try {
+            e.setName(newName);
+            System.out.println("Exchange renamed!");
+        } catch (SQLException exception) {
+            System.out.println("Error while renaming exchange: " + exception.getMessage());
+        }
+    }
+
+    // rename a stock trader
+    private void handleRenameStockTrader() {
+        if (stockTraders.size() == 0) {
+            System.out.println("There are no stock traders");
+            return;
+        }
+
+        // choose the stocktrader to rename
+        StockTrader t = chooseStockTrader();
+        System.out.println("New name: ");
+        String newName = scanner.next();
+
+        try {
+            t.setName(newName);
+            System.out.println("Stocktrader renamed!");
+        } catch (SQLException exception) {
+            System.out.println("Error while renaming stock trader: " + exception.getMessage());
         }
     }
 

@@ -44,6 +44,10 @@ Add company
 <br>
 Add stock trader
 <br>
+Rename exchange
+<br>
+Rename stock trader
+<br>
 List companies on exchange
 <br>
 Place order

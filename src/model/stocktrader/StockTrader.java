@@ -12,8 +12,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class StockTrader {
-    private final String name;
     private final ArrayList<Order> activeOrders;
+    private String name;
 
     public StockTrader(String name) {
         this.name = name;
@@ -22,6 +22,11 @@ public class StockTrader {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) throws SQLException {
+        DatabaseConnection.getInstance().renameStockTrader(this.name, name);
+        this.name = name;
     }
 
     public ArrayList<Order> getActiveOrders() {

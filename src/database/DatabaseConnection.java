@@ -218,6 +218,24 @@ public class DatabaseConnection {
         statement.executeUpdate();
     }
 
+    // renames an exchange
+    public void renameExchange(String oldName, String newName) throws SQLException {
+        String query = "UPDATE EXCHANGES SET exchange_name = ? WHERE exchange_name = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, newName);
+        statement.setString(2, oldName);
+        statement.executeUpdate();
+    }
+
+    // renames a stock trader
+    public void renameStockTrader(String oldName, String newName) throws SQLException {
+        String query = "UPDATE STOCKTRADERS SET stocktrader_name = ? WHERE stocktrader_name = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, newName);
+        statement.setString(2, oldName);
+        statement.executeUpdate();
+    }
+
     // add a listing to the databse
     public void listOn(String exchangeName, String companyTicker) throws SQLException {
         String count = "SELECT COUNT(*) AS cnt FROM LISTED_ON WHERE exchange_name=? AND company_ticker=?";
