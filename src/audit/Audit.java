@@ -1,7 +1,5 @@
 package audit;
 
-import service.ServiceCommand;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,18 +26,9 @@ public class Audit {
     }
 
     // logs a user-initiated command
-    public void logCommand(ServiceCommand command) {
+    public void logCommand(String command) {
         try {
             auditFile.write(command + "," + new Date() + "\n");
-        } catch (IOException e) {
-            System.out.println("Could not write to audit file: " + e.getMessage());
-        }
-    }
-
-    // logs the start of a new market simulation
-    public void logSimulation() {
-        try {
-            auditFile.write("START_NEW_SIMULATION," + new Date() + "\n");
         } catch (IOException e) {
             System.out.println("Could not write to audit file: " + e.getMessage());
         }

@@ -33,6 +33,7 @@ public class StockMarketSimulator {
     }
 
     // used for manual testing
+    @SuppressWarnings("unused")
     public void simulate_manual() throws SQLException {
         DatabaseConnection.getInstance().eraseAll();
 
@@ -78,7 +79,7 @@ public class StockMarketSimulator {
         DatabaseConnection.getInstance().eraseAll();
 
         Audit audit = Audit.getInstance();
-        audit.logSimulation();
+        audit.logCommand("START_NEW_SIMULATION");
 
         // generate entities
         generateRandomCompanies(cntCompanies);
@@ -90,7 +91,8 @@ public class StockMarketSimulator {
             for (int i = 0; i < cntListings; i++) {
                 int rnd = (int) Math.floor(Math.random() * cntExchanges);
                 c.listOn(exchanges.get(rnd));
-                audit.logCommand(ServiceCommand.LIST_COMPANY_ON_EXCHANGE);
+                audit.logCommand(ServiceCommand.LIST_COMPANY_ON_EXCHANGE + " " + c.getName()
+                        + " on " + exchanges.get(rnd).getName());
             }
         }
 
@@ -101,7 +103,6 @@ public class StockMarketSimulator {
             // cancel a random order with probability cancellationProb
             if (Math.random() <= cancellationProb) {
                 cancelRandomOrder(cntStockTraders);
-                audit.logCommand(ServiceCommand.CANCEL_ORDER);
             }
         }
 
@@ -110,7 +111,9 @@ public class StockMarketSimulator {
             for (Exchange e : exchanges) {
                 if (c.isListedOn(e)) {
                     e.showOrders(c);
-                    audit.logCommand(ServiceCommand.SHOW_ACTIVE_ORDERS_FOR_COMPANY_ON_EXCHANGE);
+                    audit.logCommand(ServiceCommand.SHOW_ACTIVE_ORDERS_FOR_COMPANY_ON_EXCHANGE
+                            + " for " + c.getName()
+                            + " on " + e.getName());
                 }
             }
         }
@@ -126,7 +129,7 @@ public class StockMarketSimulator {
             try {
                 DatabaseConnection.getInstance().addCompany(random_name, random_ticker);
                 companies.add(new Company(random_name, random_ticker));
-                Audit.getInstance().logCommand(ServiceCommand.ADD_COMPANY);
+                Audit.getInstance().logCommand(ServiceCommand.ADD_COMPANY + " " + random_name);
             } catch (SQLException | IOException exception) {
                 System.out.printf("Simulation warning: " + exception.getMessage());
             }
@@ -140,7 +143,7 @@ public class StockMarketSimulator {
             try {
                 DatabaseConnection.getInstance().addExchange(random_name);
                 exchanges.add(new Exchange(random_name));
-                Audit.getInstance().logCommand(ServiceCommand.ADD_EXCHANGE);
+                Audit.getInstance().logCommand(ServiceCommand.ADD_EXCHANGE + " " + random_name);
             } catch (SQLException | IOException exception) {
                 System.out.printf("Simulation warning: " + exception.getMessage());
             }
@@ -154,7 +157,7 @@ public class StockMarketSimulator {
             try {
                 DatabaseConnection.getInstance().addStockTrader(random_name);
                 stockTraders.add(new StockTrader(random_name));
-                Audit.getInstance().logCommand(ServiceCommand.ADD_STOCK_TRADER);
+                Audit.getInstance().logCommand(ServiceCommand.ADD_STOCK_TRADER + " " + random_name);
             } catch (SQLException | IOException exception) {
                 System.out.printf("Simulation warning: " + exception.getMessage());
             }
@@ -186,7 +189,11 @@ public class StockMarketSimulator {
                             companies.get(companyIdx),
                             price,
                             quantity);
-            Audit.getInstance().logCommand(ServiceCommand.PLACE_ORDER);
+            Audit.getInstance()
+                    .logCommand(ServiceCommand.PLACE_ORDER
+                            + " by " + stockTraders.get(stockTraderIdx).getName()
+                            + " for " + companies.get(companyIdx).getTicker()
+                            + " on " + exchanges.get(exchangeIdx).getName());
         } catch (Exception e) {
             System.out.println("Simulation warning: " + e.getMessage());
         }
@@ -205,5 +212,14 @@ public class StockMarketSimulator {
         stockTraders
                 .get(stockTraderIdx)
                 .cancelOrder(activeOrders.get(orderIdx));
+
+        try {
+            Audit.getInstance().logCommand(ServiceCommand.CANCEL_ORDER
+                    + " by " + stockTraders.get(stockTraderIdx).getName()
+                    + " for " + activeOrders.get(orderIdx).getTicker()
+                    + " on " + activeOrders.get(orderIdx).getExchange().getName());
+        } catch (Exception e) {
+            System.out.println("Simulation warning: " + e.getMessage());
+        }
     }
 }

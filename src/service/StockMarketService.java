@@ -81,10 +81,10 @@ public class StockMarketService {
         while (true) {
             // parse user command
             ServiceCommand command = getCommand();
-            audit.logCommand(command);
 
             // quit the interactive menu and close the resources
             if (command == ServiceCommand.QUIT) {
+                audit.logCommand(String.valueOf(ServiceCommand.QUIT));
                 try {
                     connection.close();
                     audit.close();
@@ -122,6 +122,7 @@ public class StockMarketService {
         try {
             connection.addExchange(name);
             exchanges.add(new Exchange(name));
+            audit.logCommand(ServiceCommand.ADD_EXCHANGE + " " + name);
             System.out.println("Exchange added");
         } catch (SQLException exception) {
             System.out.println("Error adding the exchange: " + exception.getMessage());
@@ -138,6 +139,7 @@ public class StockMarketService {
         try {
             connection.addCompany(name, ticker);
             companies.add(new Company(name, ticker));
+            audit.logCommand(ServiceCommand.ADD_COMPANY + " " + name + " " + ticker);
             System.out.println("Company added");
         } catch (SQLException exception) {
             System.out.println("Error adding the company: " + exception.getMessage());
@@ -152,6 +154,7 @@ public class StockMarketService {
         try {
             connection.addStockTrader(name);
             stockTraders.add(new StockTrader(name));
+            audit.logCommand(ServiceCommand.ADD_STOCK_TRADER + " " + name);
             System.out.println("Stock trader added");
         } catch (SQLException exception) {
             System.out.println("Error adding the stock trader: " + exception.getMessage());
@@ -167,11 +170,13 @@ public class StockMarketService {
 
         // choose the exchange to rename
         Exchange e = chooseExchange();
+        String oldName = e.getName();
         System.out.println("New name: ");
         String newName = scanner.next();
 
         try {
             e.setName(newName);
+            audit.logCommand(ServiceCommand.RENAME_EXCHANGE + " " + oldName + " to " + newName);
             System.out.println("Exchange renamed!");
         } catch (SQLException exception) {
             System.out.println("Error while renaming exchange: " + exception.getMessage());
@@ -187,11 +192,13 @@ public class StockMarketService {
 
         // choose the stocktrader to rename
         StockTrader t = chooseStockTrader();
+        String oldName = t.getName();
         System.out.println("New name: ");
         String newName = scanner.next();
 
         try {
             t.setName(newName);
+            audit.logCommand(ServiceCommand.RENAME_STOCK_TRADER + " " + oldName + " to " + newName);
             System.out.println("Stocktrader renamed!");
         } catch (SQLException exception) {
             System.out.println("Error while renaming stock trader: " + exception.getMessage());
@@ -215,6 +222,7 @@ public class StockMarketService {
 
         try {
             c.listOn(e);
+            audit.logCommand(ServiceCommand.LIST_COMPANY_ON_EXCHANGE + " " + c.getTicker() + " on " + e.getName());
             System.out.println(c.getName() + " listed on " + e.getName());
         } catch (SQLException exception) {
             System.out.println("Error while listing on exchange: " + exception.getMessage());
@@ -252,6 +260,10 @@ public class StockMarketService {
 
         try {
             t.placeOrder(ot, oa, e, c, price, quantity);
+            audit.logCommand(ServiceCommand.PLACE_ORDER
+                    + " by " + t.getName()
+                    + " for " + c.getTicker()
+                    + " on " + e.getName());
             System.out.println("Order placed");
         } catch (Exception exception) {
             System.out.println("Error while adding order: " + exception.getMessage());
@@ -276,7 +288,11 @@ public class StockMarketService {
         Order o = chooseOrder(t);
         try {
             t.cancelOrder(o);
-            System.out.println("model.Order.Order cancelled");
+            audit.logCommand(ServiceCommand.CANCEL_ORDER
+                    + " by " + t.getName()
+                    + " for " + o.getTicker()
+                    + " on " + o.getExchange().getName());
+            System.out.println("Order cancelled");
         } catch (SQLException exception) {
             System.out.println("Error while cancelling order: " + exception.getMessage());
         }
@@ -298,6 +314,9 @@ public class StockMarketService {
         Exchange e = chooseExchange();
 
         e.showTransactions(c);
+        audit.logCommand(ServiceCommand.SHOW_TRANSACTIONS_FOR_COMPANY_ON_EXCHANGE
+                + " for " + c.getName()
+                + " on " + e.getName());
     }
 
     // show active orders for a given company on a given exchange
@@ -316,6 +335,9 @@ public class StockMarketService {
         Exchange e = chooseExchange();
 
         e.showOrders(c);
+        audit.logCommand(ServiceCommand.SHOW_ACTIVE_ORDERS_FOR_COMPANY_ON_EXCHANGE
+                + " for " + c.getName()
+                + " on " + e.getName());
     }
 
     // show active orders for a given stock trader
@@ -329,6 +351,7 @@ public class StockMarketService {
         StockTrader t = chooseStockTrader();
 
         t.showActiveOrders();
+        audit.logCommand(ServiceCommand.SHOW_ACTIVE_ORDERS_FOR_STOCK_TRADER + " for " + t.getName());
     }
 
     // show the market price evolution of a given company
@@ -342,6 +365,7 @@ public class StockMarketService {
         Company c = chooseCompany();
 
         c.graphMarketPriceEvolution();
+        audit.logCommand(ServiceCommand.SHOW_MARKET_PRICE_EVOLUTION_FOR_COMPANY + " for " + c.getTicker());
     }
 
     // parse user's choice of exchange
